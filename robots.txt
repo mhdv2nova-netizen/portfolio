@@ -1,0 +1,6 @@
+# robots.txt for KINETIC — Bullet Journal by Deep
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: sitemap.xml
