@@ -147,6 +147,8 @@ html{color-scheme:dark}
   --accent-hover: #B2E61B;
   --accent-glow: rgba(197, 248, 42, 0.35);
   --accent-soft: rgba(197, 248, 42, 0.15);
+  --btn-primary-text: #000000;
+  --accent-contrast: #000000;
   
   --accent2: #FFFFFF;
   --accent2-soft: rgba(255, 255, 255, 0.15);
@@ -189,7 +191,7 @@ html{color-scheme:dark}
   --body: var(--font-body);
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #C5F82A 0%, #FFFFFF 100%);
+  --gradient-primary: linear-gradient(135deg, #C5F82A 0%, #B2E61B 100%);
   --gradient-warm: linear-gradient(135deg, #C5F82A 0%, #FF7700 100%);
   --gradient-cool: linear-gradient(135deg, #00F0FF 0%, #C5F82A 100%);
   --gradient-subtle: linear-gradient(135deg, rgba(197,248,42,0.15) 0%, rgba(255,255,255,0.05) 100%);
@@ -210,6 +212,8 @@ html[data-theme="rosui-warm"]{
   --text-secondary: #585753;
   --accent: #D65A54;
   --accent-soft: rgba(214, 90, 84, 0.12);
+  --btn-primary-text: #FFFFFF;
+  --accent-contrast: #FFFFFF;
   --accent2: #F5B82E;
   --terracotta-bg: #D65A54;
   --terracotta-text: #FFFFFF;
@@ -219,6 +223,7 @@ html[data-theme="rosui-warm"]{
   --border: rgba(34, 37, 42, 0.1);
   --font-heading: 'Bebas Neue', cursive, sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
+  --gradient-primary: linear-gradient(135deg, #D65A54 0%, #B8433E 100%);
 }
 
 html[data-theme="glass-dark"] {
@@ -240,6 +245,8 @@ html[data-theme="glass-dark"] {
   --accent: #a78bfa;
   --accent-glow: rgba(167,139,250,0.25);
   --accent-soft: rgba(167,139,250,0.12);
+  --btn-primary-text: #0c0e14;
+  --accent-contrast: #0c0e14;
   --accent2: #60a5fa;
   --accent2-soft: rgba(96,165,250,0.12);
   --border: rgba(255,255,255,0.07);
@@ -366,12 +373,192 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .date-display{font-family:var(--heading);font-size:1.15rem;min-width:180px;text-align:center;font-weight:500;color:var(--text-primary)}
 
 .add-entry-form{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.entry-type-select{
-  padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);
-  font-size:.8rem;background:var(--bg-card-solid);cursor:pointer;color:var(--text-primary);
-  font-family:var(--body);transition:border-color .2s;
+
+/* ═══════════════════ CUSTOM TYPE SELECTOR / PICKER ═══════════════════ */
+.custom-type-picker{
+  position:relative;
+  display:inline-flex;
+  flex-shrink:0;
+  user-select:none;
 }
-.entry-type-select option{background:var(--bg-card-solid);color:var(--text-primary)}
+.custom-type-trigger{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  background:var(--bg-card-solid);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  color:var(--text-primary);
+  font-family:var(--body);
+  font-size:0.78rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  outline:none;
+  height:36px;
+  white-space:nowrap;
+}
+.custom-type-trigger:hover{
+  background:var(--bg-glass-hover);
+  border-color:var(--accent-soft);
+  box-shadow:0 0 14px var(--accent-glow);
+}
+.custom-type-trigger.open{
+  border-color:var(--accent);
+  background:var(--bg-glass-active);
+  box-shadow:0 0 0 2px var(--accent-soft);
+}
+.custom-type-trigger .ct-badge{
+  font-size:0.95rem;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.custom-type-trigger .ct-text{
+  font-weight:600;
+  letter-spacing:0.2px;
+  color:var(--text-primary);
+}
+.custom-type-trigger .ct-arrow{
+  font-size:0.65rem;
+  color:var(--text-tertiary);
+  transition:transform .2s ease;
+  margin-left:2px;
+  display:inline-block;
+  opacity:0.7;
+}
+.custom-type-trigger.open .ct-arrow{
+  transform:rotate(180deg);
+  color:var(--accent);
+  opacity:1;
+}
+
+/* Custom Floating Menu */
+.custom-type-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  min-width:150px;
+  background:var(--bg-card-solid);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 12px 36px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06);
+  padding:6px;
+  display:none;
+  flex-direction:column;
+  gap:3px;
+  z-index:1000;
+  animation:customTypeMenuEnter .18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.custom-type-menu.open{
+  display:flex;
+}
+@keyframes customTypeMenuEnter{
+  from{opacity:0;transform:translateY(-6px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.custom-type-option{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:0.78rem;
+  font-weight:600;
+  color:var(--text-secondary);
+  cursor:pointer;
+  transition:all .15s ease;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  font-family:var(--body);
+  user-select:none;
+}
+.custom-type-option:hover{
+  background:var(--accent-soft);
+  color:var(--text-primary);
+  transform:translateX(2px);
+}
+.custom-type-option.selected{
+  background:var(--bg-glass-active);
+  color:var(--accent);
+  font-weight:700;
+}
+.custom-type-option .cto-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.custom-type-option .cto-bullet{
+  font-size:0.95rem;
+  width:20px;
+  text-align:center;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.custom-type-option .cto-check{
+  font-size:0.75rem;
+  color:var(--accent);
+  font-weight:700;
+  opacity:0;
+  transition:opacity .15s;
+}
+.custom-type-option.selected .cto-check{
+  opacity:1;
+}
+
+/* In-Card compact trigger */
+.monthly-area-add-form .custom-type-trigger,
+.weekly-area-add-form .custom-type-trigger{
+  height:28px;
+  padding:3px 8px;
+  font-size:0.72rem;
+  background:transparent;
+  border-color:transparent;
+}
+.monthly-area-add-form .custom-type-trigger:hover,
+.weekly-area-add-form .custom-type-trigger:hover{
+  background:var(--bg-glass-hover);
+  border-color:var(--border-light);
+}
+.monthly-area-add-form .custom-type-trigger.open,
+.weekly-area-add-form .custom-type-trigger.open{
+  background:var(--bg-glass-active);
+  border-color:var(--accent);
+}
+
+/* Dropup Menu for Bottom-Docked Forms & Smart Dropup */
+.monthly-area-add-form .custom-type-menu,
+.weekly-area-add-form .custom-type-menu,
+.weekly-day-add .custom-type-menu,
+.custom-type-picker.dropup .custom-type-menu{
+  top:auto !important;
+  bottom:calc(100% + 8px) !important;
+  box-shadow:0 -12px 36px rgba(0,0,0,0.75), 0 0 0 1.5px var(--border) !important;
+  animation:customTypeMenuDropupEnter .18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+@keyframes customTypeMenuDropupEnter{
+  from{opacity:0;transform:translateY(6px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.entry-type-select{
+  padding:8px 28px 8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  font-size:.8rem;font-weight:600;background:var(--bg-card-solid);cursor:pointer;color:var(--text-primary);
+  font-family:var(--body);transition:all .2s;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:14px;
+}
+.entry-type-select option{background:var(--bg-card-solid);color:var(--text-primary);padding:6px 10px}
 .entry-input{
   flex:1;min-width:160px;padding:10px 14px;border:1px solid var(--border);
   border-radius:var(--radius-sm);font-size:0.95rem;font-family:var(--body);
@@ -387,10 +574,10 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
   user-select:none;font-family:var(--body);letter-spacing:0.3px;
 }
 .btn-primary{
-  background:var(--gradient-primary);color:#fff;
-  box-shadow:0 2px 12px var(--accent-glow);
+  background:var(--gradient-primary, var(--accent));color:var(--btn-primary-text, #000000) !important;
+  box-shadow:0 2px 12px var(--accent-glow);font-weight:700;
 }
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow);color:var(--btn-primary-text, #000000) !important}
 .btn-primary:active{transform:translateY(0)}
 .btn-ghost{
   background:transparent;border:1px solid var(--border);color:var(--text-secondary);
@@ -459,7 +646,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 }
 .add-subtask input:focus{outline:none;border-color:var(--accent);border-style:solid}
 .add-subtask button{padding:4px 10px;background:var(--accent-soft);color:var(--accent);border:none;border-radius:6px;cursor:pointer;font-size:.65rem;font-weight:600;transition:all .2s}
-.add-subtask button:hover{background:var(--accent);color:#fff}
+.add-subtask button:hover{background:var(--accent);color:var(--btn-primary-text, #fff)}
 .subtask-count{font-size:.58rem;color:var(--text-secondary);background:var(--bg-glass-active);padding:2px 6px;border-radius:10px;margin-left:4px}
 
 /* ═══════════════════ EMPTY STATE ═══════════════════ */
@@ -511,7 +698,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .daily-cal-day.other-month{opacity:.15;pointer-events:none}
 .daily-cal-day .dcal-num{font-size:.72rem;font-weight:600;margin-bottom:3px;display:flex;justify-content:space-between;color:var(--text-secondary)}
 .daily-cal-day.today .dcal-num{color:var(--accent)}
-.daily-cal-day .dcal-count{font-size:.5rem;background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-weight:600}
+.daily-cal-day .dcal-count{font-size:.5rem;background:var(--accent);color:var(--btn-primary-text, #000);border-radius:10px;padding:1px 5px;font-weight:700}
 .daily-cal-day.today .dcal-count{background:var(--accent)}
 .daily-cal-entry{display:flex;align-items:center;gap:2px;font-family:var(--body);font-size:.68rem;padding:0 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-secondary)}
 .daily-cal-entry .dce-bullet{font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0;font-size:.6rem}
@@ -519,7 +706,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .daily-cal-entry .dce-bullet.task-i{color:var(--text-primary)}.daily-cal-entry .dce-bullet.task-c{color:var(--green)}.daily-cal-entry .dce-bullet.event{color:var(--orange)}.daily-cal-entry .dce-bullet.note{color:var(--text-secondary)}
 .daily-cal-more{font-size:.5rem;color:var(--text-tertiary);font-style:italic}
 
-/* ═══════════════════ MONTHLY ═══════════════════ */
+/* ═══════════════════ MONTHLY DASHBOARD ═══════════════════ */
 .calendar-grid{background:var(--bg-card);backdrop-filter:blur(12px);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
 .calendar-header{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(96,165,250,0.1))}
 .calendar-header div{padding:10px;text-align:center;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent)}
@@ -532,9 +719,298 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .calendar-day.today .day-number{color:var(--accent)}
 .calendar-day .day-dots{display:flex;flex-wrap:wrap;gap:3px}
 .calendar-day .day-dot{width:5px;height:5px;border-radius:50%}
-.calendar-day .day-dot.task{background:var(--accent)}.calendar-day .day-dot.event{background:var(--orange)}.calendar-day .day-dot.note{background:var(--accent2)}
-.monthly-tasks{background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);padding:20px;border:1px solid var(--border)}
-.monthly-tasks h3{font-family:var(--heading);font-size:1.15rem;margin-bottom:14px;font-weight:600}
+.calendar-day .day-dot.task{background:var(--accent)}.calendar-day .day-dot.event{background:var(--orange)}.calendar-day .day-dot.note{background:var(--accent2)}.calendar-day .day-dot.goal{background:var(--cyan)}
+
+/* Monthly Dashboard Container */
+.monthly-dashboard{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+
+/* Monthly Overview Summary Bar */
+.monthly-overview-card{
+  background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);
+  border:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:16px;
+  box-shadow:var(--shadow);
+}
+.monthly-overview-top{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+}
+.monthly-overview-title-group{
+  display:flex;align-items:center;gap:10px;
+}
+.monthly-overview-title-group h3{
+  font-family:var(--heading);font-size:1.25rem;font-weight:700;letter-spacing:-0.3px;
+  color:var(--text-primary);display:flex;align-items:center;gap:8px;
+}
+.monthly-stats-strip{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.monthly-stat-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--radius-pill);
+  font-size:0.75rem;font-weight:600;background:var(--bg-card);border:1px solid var(--border-light);
+  color:var(--text-secondary);transition:all .2s ease;
+}
+.monthly-stat-pill strong{
+  color:var(--accent);font-family:var(--heading);font-size:0.88rem;
+}
+.monthly-stat-pill.highlight{
+  background:var(--accent-soft);border-color:rgba(197,248,42,0.3);color:var(--text-primary);
+}
+
+/* Overview Progress Bar */
+.monthly-progress-track{
+  width:100%;height:8px;background:var(--bg-card-solid);border-radius:var(--radius-pill);
+  overflow:hidden;border:1px solid var(--border-light);position:relative;
+}
+.monthly-progress-fill{
+  height:100%;background:var(--gradient-cool);border-radius:var(--radius-pill);
+  transition:width 0.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px var(--accent-glow);
+}
+
+/* Toolbar & Templates */
+.monthly-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding-top:4px;border-top:1px solid var(--border-light);
+}
+.monthly-template-pills{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.monthly-template-label{
+  font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-tertiary);margin-right:2px;
+}
+.monthly-template-btn{
+  background:var(--bg-glass);border:1px solid var(--border);border-radius:var(--radius-pill);
+  padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .2s ease;
+}
+.monthly-template-btn:hover{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--text-primary);
+  transform:translateY(-1px);
+}
+.monthly-filter-controls{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.monthly-search-input{
+  padding:6px 12px;background:var(--bg-card-solid);border:1px solid var(--border);
+  border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-primary);
+  outline:none;font-family:var(--body);width:160px;transition:all .2s ease;
+}
+.monthly-search-input:focus{
+  border-color:var(--accent);width:200px;box-shadow:0 0 0 2px var(--accent-glow);
+}
+.monthly-filter-chip{
+  background:transparent;border:1px solid var(--border-light);border-radius:var(--radius-pill);
+  padding:4px 9px;font-size:0.7rem;font-weight:600;color:var(--text-tertiary);
+  cursor:pointer;transition:all .2s;
+}
+.monthly-filter-chip:hover,.monthly-filter-chip.active{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+}
+
+/* Areas Grid */
+.monthly-areas-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+  gap:16px;align-items:start;
+}
+
+/* Area Card */
+.monthly-area-card{
+  background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-radius:var(--radius);border:1px solid var(--border);overflow:visible;
+  position:relative;transition:border-color .28s ease, transform .28s ease, box-shadow .28s ease;
+  display:flex;flex-direction:column;box-shadow:var(--shadow);
+}
+.monthly-area-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  border-radius:var(--radius) var(--radius) 0 0;
+  background:var(--area-color, var(--accent));transition:height .25s ease;
+}
+.monthly-area-card:hover{
+  border-color:rgba(255,255,255,0.25);transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.35);
+}
+.monthly-area-card:hover::before{
+  height:5px;
+}
+
+/* Area Card Header */
+.monthly-area-header{
+  padding:16px 16px 10px 16px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;border-bottom:1px solid var(--border-light);
+}
+.monthly-area-title-group{
+  display:flex;align-items:center;gap:8px;min-width:0;flex:1;
+}
+.monthly-area-icon-badge{
+  width:32px;height:32px;border-radius:var(--radius-sm);display:flex;
+  align-items:center;justify-content:center;font-size:1.1rem;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border-light);
+  flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.monthly-area-title{
+  font-family:var(--heading);font-size:1.05rem;font-weight:700;
+  color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;
+}
+.monthly-area-title:hover{
+  color:var(--area-color, var(--accent));
+}
+.monthly-area-pct-pill{
+  font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);
+  background:var(--bg-card);border:1px solid var(--border-light);
+  color:var(--area-color, var(--accent));flex-shrink:0;
+}
+
+/* Area Actions */
+.monthly-area-actions{
+  display:flex;align-items:center;gap:3px;flex-shrink:0;
+}
+.area-btn{
+  background:transparent;border:none;color:var(--text-tertiary);
+  width:24px;height:24px;border-radius:4px;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;font-size:0.75rem;transition:all .2s;
+  padding:0;
+}
+.area-btn:hover{
+  background:var(--bg-glass-hover);color:var(--text-primary);
+}
+.area-btn.danger:hover{
+  color:var(--rose);background:var(--rose-soft);
+}
+
+/* Area Progress Mini-Bar */
+.monthly-area-progress-strip{
+  padding:8px 16px;background:rgba(0,0,0,0.12);display:flex;
+  flex-direction:column;gap:5px;border-bottom:1px solid var(--border-light);
+}
+.monthly-area-progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:0.68rem;color:var(--text-secondary);
+}
+.monthly-area-progress-info strong{
+  color:var(--text-primary);
+}
+.monthly-area-bar-track{
+  width:100%;height:4px;background:var(--bg-card-solid);border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+.monthly-area-bar-fill{
+  height:100%;border-radius:var(--radius-pill);
+  background:var(--area-color, var(--accent));
+  transition:width 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+/* Area Body & Lists */
+.monthly-area-body{
+  padding:12px 14px;display:flex;flex-direction:column;gap:10px;
+}
+.monthly-area-items{
+  list-style:none;display:flex;flex-direction:column;gap:4px;
+  min-height:20px;
+}
+
+/* Area In-Card Notes Scratchpad */
+.monthly-area-notes-container{
+  margin-top:4px;border-top:1px dashed var(--border-light);padding-top:8px;
+}
+.monthly-area-notes-header{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:0.7rem;font-weight:600;color:var(--text-tertiary);
+  cursor:pointer;padding:3px 2px;user-select:none;
+}
+.monthly-area-notes-header:hover{
+  color:var(--text-secondary);
+}
+.monthly-area-notes-box{
+  width:100%;min-height:54px;max-height:160px;padding:8px 10px;
+  background:rgba(0,0,0,0.2);border:1px solid var(--border-light);
+  border-radius:var(--radius-sm);color:var(--text-secondary);
+  font-family:var(--body);font-size:0.8rem;line-height:1.4;
+  resize:vertical;outline:none;margin-top:6px;transition:border-color .2s ease;
+}
+.monthly-area-notes-box:focus{
+  border-color:var(--area-color, var(--accent));color:var(--text-primary);
+  background:var(--bg-card-solid);
+}
+.monthly-area-notes-box::placeholder{
+  color:var(--text-muted);font-style:italic;font-size:0.75rem;
+}
+
+/* Area Quick Add Form */
+.monthly-area-add-form{
+  display:flex;gap:6px;margin-top:6px;align-items:center;
+  background:var(--bg-card);padding:4px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-light);
+}
+.monthly-area-add-form select{
+  padding:5px 6px;border:1px solid var(--border-light);border-radius:var(--radius-sm);
+  font-size:0.7rem;background:var(--bg-card-solid);color:var(--text-primary);
+  outline:none;cursor:pointer;flex:0 0 85px;
+}
+.monthly-area-add-form input{
+  flex:1;min-width:0;padding:6px 8px;border:none;background:transparent;
+  font-size:0.8rem;color:var(--text-primary);outline:none;font-family:var(--body);
+}
+.monthly-area-add-form input::placeholder{
+  color:var(--text-muted);font-size:0.75rem;
+}
+.monthly-area-add-form button{
+  padding:5px 10px;background:var(--accent-soft);color:var(--accent);
+  border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:0.72rem;
+  font-weight:700;transition:all .2s;flex-shrink:0;
+}
+.monthly-area-add-form button:hover{
+  background:var(--accent);color:#000;
+}
+
+/* Goal Bullet Badge Style */
+.entry-bullet.goal{
+  background:rgba(0,240,255,0.15);color:var(--cyan);border-color:rgba(0,240,255,0.3);
+}
+.entry-bullet.goal.complete{
+  background:var(--green);color:#000;border-color:var(--green);
+}
+
+/* Empty Area State */
+.monthly-empty-items{
+  text-align:center;padding:16px 8px;color:var(--text-muted);
+  font-size:0.75rem;font-style:italic;
+}
+.monthly-no-areas{
+  grid-column:1/-1;text-align:center;padding:40px 20px;
+  background:var(--bg-glass);border-radius:var(--radius);border:2px dashed var(--border);
+}
+.monthly-no-areas h4{
+  font-family:var(--heading);font-size:1.15rem;margin-bottom:8px;color:var(--text-primary);
+}
+.monthly-no-areas p{
+  font-size:0.85rem;color:var(--text-secondary);margin-bottom:18px;
+}
+
+/* Area Modal Styling */
+.area-swatch-grid{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;
+}
+.area-color-swatch{
+  width:26px;height:26px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;transition:all .2s ease;position:relative;
+}
+.area-color-swatch:hover,.area-color-swatch.selected{
+  transform:scale(1.2);border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,0.3);
+}
+.area-emoji-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(32px,1fr));
+  gap:6px;margin-top:6px;max-height:130px;overflow-y:auto;padding:4px;
+  background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);
+}
+.area-emoji-btn{
+  width:32px;height:32px;border:1px solid var(--border-light);background:var(--bg-card-solid);
+  border-radius:6px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;
+  justify-content:center;transition:all .18s ease;
+}
+.area-emoji-btn:hover,.area-emoji-btn.selected{
+  background:var(--accent-soft);border-color:var(--accent);transform:scale(1.15);
+}
+
 
 /* ═══════════════════ WEEKLY LOG ═══════════════════ */
 .week-summary{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap}
@@ -596,25 +1072,248 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .weekly-day-add select{padding:3px 5px;border:1px solid var(--border);border-radius:4px;font-size:.6rem;background:var(--bg-card-solid);color:var(--text-secondary)}
 .weekly-day-add select option{background:var(--bg-card-solid)}
 .weekly-day-add button{padding:3px 10px;background:var(--accent-soft);color:var(--accent);border:none;border-radius:4px;cursor:pointer;font-size:.6rem;font-weight:600;transition:all .2s}
-.weekly-day-add button:hover{background:var(--accent);color:#fff}
+.weekly-day-add button:hover{background:var(--accent);color:var(--btn-primary-text, #000)}
 .weekly-day-empty{text-align:center;padding:24px 8px;color:var(--text-muted);font-size:.75rem;font-style:italic}
 
-.weekly-goals{background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);padding:22px;border:1px solid var(--border)}
-.weekly-goals h3{font-family:var(--heading);font-size:1.15rem;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-weight:600}
-.weekly-goals-list{list-style:none}
-.wg-item{display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:3px;border-radius:var(--radius-sm);transition:all .2s;background:var(--bg-glass)}
-.wg-item:hover{background:var(--bg-glass-hover)}
-.wg-check{
-  width:22px;height:22px;border:2px solid var(--border);border-radius:50%;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:all .25s;
-  flex-shrink:0;user-select:none;font-size:.65rem;
+/* ═══════════════════ WEEKLY DASHBOARD ═══════════════════ */
+.weekly-dashboard{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+
+/* Weekly Overview Summary Bar */
+.weekly-overview-card{
+  background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);
+  border:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:16px;
+  box-shadow:var(--shadow);
 }
-.wg-check.done{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 8px var(--green-soft)}
-.wg-text{flex:1;font-family:var(--body);font-size:0.9rem;color:var(--text-primary)}
-.wg-text.done{text-decoration:line-through;color:var(--text-tertiary)}
-.wg-del{background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:.65rem;opacity:0;transition:opacity .2s;padding:3px 5px}
-.wg-item:hover .wg-del{opacity:1}
-.wg-del:hover{color:var(--rose)}
+.weekly-overview-top{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+}
+.weekly-overview-title-group{
+  display:flex;align-items:center;gap:10px;
+}
+.weekly-overview-title-group h3{
+  font-family:var(--heading);font-size:1.25rem;font-weight:700;letter-spacing:-0.3px;
+  color:var(--text-primary);display:flex;align-items:center;gap:8px;
+}
+.weekly-stats-strip{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.weekly-stat-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--radius-pill);
+  font-size:0.75rem;font-weight:600;background:var(--bg-card);border:1px solid var(--border-light);
+  color:var(--text-secondary);transition:all .2s ease;
+}
+.weekly-stat-pill strong{
+  color:var(--accent);font-family:var(--heading);font-size:0.88rem;
+}
+.weekly-stat-pill.highlight{
+  background:var(--accent-soft);border-color:rgba(197,248,42,0.3);color:var(--text-primary);
+}
+
+/* Weekly Progress Bar */
+.weekly-progress-track{
+  width:100%;height:8px;background:var(--bg-card-solid);border-radius:var(--radius-pill);
+  overflow:hidden;border:1px solid var(--border-light);position:relative;
+}
+.weekly-progress-fill{
+  height:100%;background:var(--gradient-cool);border-radius:var(--radius-pill);
+  transition:width 0.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px var(--accent-glow);
+}
+
+/* Weekly Toolbar & Templates */
+.weekly-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding-top:4px;border-top:1px solid var(--border-light);
+}
+.weekly-template-pills{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.weekly-template-label{
+  font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-tertiary);margin-right:2px;
+}
+.weekly-template-btn{
+  background:var(--bg-glass);border:1px solid var(--border);border-radius:var(--radius-pill);
+  padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .2s ease;
+}
+.weekly-template-btn:hover{
+  background:var(--accent);border-color:var(--accent);color:var(--btn-primary-text, #000);
+  transform:translateY(-1px);
+}
+.weekly-filter-controls{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.weekly-search-input{
+  padding:6px 12px;background:var(--bg-card-solid);border:1px solid var(--border);
+  border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-primary);
+  outline:none;font-family:var(--body);width:160px;transition:all .2s ease;
+}
+.weekly-search-input:focus{
+  border-color:var(--accent);width:200px;box-shadow:0 0 0 2px var(--accent-glow);
+}
+.weekly-filter-chip{
+  background:transparent;border:1px solid var(--border-light);border-radius:var(--radius-pill);
+  padding:4px 9px;font-size:0.7rem;font-weight:600;color:var(--text-tertiary);
+  cursor:pointer;transition:all .2s;
+}
+.weekly-filter-chip:hover,.weekly-filter-chip.active{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+}
+
+/* Weekly Areas Grid */
+.weekly-areas-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+  gap:16px;align-items:start;
+}
+
+/* Weekly Area Card */
+.weekly-area-card{
+  background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-radius:var(--radius);border:1px solid var(--border);overflow:visible;
+  position:relative;transition:border-color .28s ease, transform .28s ease, box-shadow .28s ease;
+  display:flex;flex-direction:column;box-shadow:var(--shadow);
+}
+.weekly-area-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  border-radius:var(--radius) var(--radius) 0 0;
+  background:var(--area-color, var(--accent));transition:height .25s ease;
+}
+.weekly-area-card:hover{
+  border-color:rgba(255,255,255,0.25);transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.35);
+}
+.weekly-area-card:hover::before{
+  height:5px;
+}
+
+/* Weekly Area Card Header */
+.weekly-area-header{
+  padding:16px 16px 10px 16px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;border-bottom:1px solid var(--border-light);
+}
+.weekly-area-title-group{
+  display:flex;align-items:center;gap:8px;min-width:0;flex:1;
+}
+.weekly-area-icon-badge{
+  width:32px;height:32px;border-radius:var(--radius-sm);display:flex;
+  align-items:center;justify-content:center;font-size:1.1rem;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border-light);
+  flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.weekly-area-title{
+  font-family:var(--heading);font-size:1.05rem;font-weight:700;
+  color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;
+}
+.weekly-area-title:hover{
+  color:var(--area-color, var(--accent));
+}
+.weekly-area-pct-pill{
+  font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);
+  background:var(--bg-card);border:1px solid var(--border-light);
+  color:var(--area-color, var(--accent));flex-shrink:0;
+}
+
+/* Weekly Area Progress Mini-Bar */
+.weekly-area-progress-strip{
+  padding:8px 16px;background:rgba(0,0,0,0.12);display:flex;
+  flex-direction:column;gap:5px;border-bottom:1px solid var(--border-light);
+}
+.weekly-area-progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:0.68rem;color:var(--text-secondary);
+}
+.weekly-area-progress-info strong{
+  color:var(--text-primary);
+}
+.weekly-area-bar-track{
+  width:100%;height:4px;background:var(--bg-card-solid);border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+.weekly-area-bar-fill{
+  height:100%;border-radius:var(--radius-pill);
+  background:var(--area-color, var(--accent));
+  transition:width 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+/* Weekly Area Body & Lists */
+.weekly-area-body{
+  padding:12px 14px;display:flex;flex-direction:column;gap:10px;
+}
+.weekly-area-items{
+  list-style:none;display:flex;flex-direction:column;gap:4px;
+  min-height:20px;
+}
+
+/* Weekly Area In-Card Notes Scratchpad */
+.weekly-area-notes-container{
+  margin-top:4px;border-top:1px dashed var(--border-light);padding-top:8px;
+}
+.weekly-area-notes-header{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:0.7rem;font-weight:600;color:var(--text-tertiary);
+  cursor:pointer;padding:3px 2px;user-select:none;
+}
+.weekly-area-notes-header:hover{
+  color:var(--text-secondary);
+}
+.weekly-area-notes-box{
+  width:100%;min-height:54px;max-height:160px;padding:8px 10px;
+  background:rgba(0,0,0,0.2);border:1px solid var(--border-light);
+  border-radius:var(--radius-sm);color:var(--text-secondary);
+  font-family:var(--body);font-size:0.8rem;line-height:1.4;
+  resize:vertical;outline:none;margin-top:6px;transition:border-color .2s ease;
+}
+.weekly-area-notes-box:focus{
+  border-color:var(--area-color, var(--accent));color:var(--text-primary);
+  background:var(--bg-card-solid);
+}
+.weekly-area-notes-box::placeholder{
+  color:var(--text-muted);font-style:italic;font-size:0.75rem;
+}
+
+/* Weekly Area Quick Add Form */
+.weekly-area-add-form{
+  display:flex;gap:6px;margin-top:6px;align-items:center;
+  background:var(--bg-card);padding:4px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-light);
+}
+.weekly-area-add-form select{
+  padding:5px 6px;border:1px solid var(--border-light);border-radius:var(--radius-sm);
+  font-size:0.7rem;background:var(--bg-card-solid);color:var(--text-primary);
+  outline:none;cursor:pointer;flex:0 0 85px;
+}
+.weekly-area-add-form input{
+  flex:1;min-width:0;padding:6px 8px;border:none;background:transparent;
+  font-size:0.8rem;color:var(--text-primary);outline:none;font-family:var(--body);
+}
+.weekly-area-add-form input::placeholder{
+  color:var(--text-muted);font-size:0.75rem;
+}
+.weekly-area-add-form button{
+  padding:5px 10px;background:var(--accent-soft);color:var(--accent);
+  border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:0.72rem;
+  font-weight:700;transition:all .2s;flex-shrink:0;
+}
+.weekly-area-add-form button:hover{
+  background:var(--accent);color:var(--btn-primary-text, #000);
+}
+
+/* Empty Weekly Area State */
+.weekly-empty-items{
+  text-align:center;padding:16px 8px;color:var(--text-muted);
+  font-size:0.75rem;font-style:italic;
+}
+.weekly-no-areas{
+  grid-column:1/-1;text-align:center;padding:40px 20px;
+  background:var(--bg-glass);border-radius:var(--radius);border:2px dashed var(--border);
+}
+.weekly-no-areas h4{
+  font-family:var(--heading);font-size:1.15rem;margin-bottom:8px;color:var(--text-primary);
+}
+.weekly-no-areas p{
+  font-size:0.85rem;color:var(--text-secondary);margin-bottom:18px;
+}
 
 /* ═══════════════════ FUTURE ═══════════════════ */
 .future-log-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
@@ -3289,40 +3988,78 @@ html, body {
 </div>
 <div id="daily-active-tag" style="display:none"></div>
 
-<div class="add-entry-form"><select class="entry-type-select" id="entry-type"><option value="task">• Task</option><option value="event">○ Event</option><option value="note">— Note</option></select><input type="text" class="entry-input" id="entry-text" placeholder="Write something... (use #tags for topics)" onkeydown="if(event.key==='Enter')addEntry()"><label class="checkbox-inline"><input type="checkbox" id="entry-priority"><span style="color:var(--rose)">★</span></label><button class="btn btn-primary" onclick="addEntry()">Add</button></div>
+<div class="add-entry-form">
+  <div class="custom-type-picker" id="ctp-daily-main">
+    <input type="hidden" id="entry-type" value="task">
+    <button type="button" class="custom-type-trigger" onclick="toggleCustomTypePicker('ctp-daily-main')" aria-label="Select entry type">
+      <span class="ct-badge">•</span>
+      <span class="ct-text">Task</span>
+      <span class="ct-arrow">▾</span>
+    </button>
+    <div class="custom-type-menu">
+      <button type="button" class="custom-type-option selected" onclick="selectCustomType('ctp-daily-main', 'entry-type', 'task', '•', 'Task')">
+        <div class="cto-left"><span class="cto-bullet">•</span><span>Task</span></div>
+        <span class="cto-check">✓</span>
+      </button>
+      <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-daily-main', 'entry-type', 'event', '○', 'Event')">
+        <div class="cto-left"><span class="cto-bullet">○</span><span>Event</span></div>
+        <span class="cto-check">✓</span>
+      </button>
+      <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-daily-main', 'entry-type', 'note', '—', 'Note')">
+        <div class="cto-left"><span class="cto-bullet">—</span><span>Note</span></div>
+        <span class="cto-check">✓</span>
+      </button>
+    </div>
+  </div>
+  <input type="text" class="entry-input" id="entry-text" placeholder="Write something... (use #tags for topics)" onkeydown="if(event.key==='Enter')addEntry()">
+  <label class="checkbox-inline"><input type="checkbox" id="entry-priority"><span style="color:var(--rose)">★</span></label>
+  <button class="btn btn-primary" onclick="addEntry()">Add</button>
+</div>
 <ul class="entries-list" id="daily-entries"></ul></div>
 <div class="daily-calendar-view" id="daily-calendar-view">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px"><div class="date-nav"><button onclick="chDCM(-1)">←</button><div class="date-display" id="dcm-display"></div><button onclick="chDCM(1)">→</button><button onclick="dcmToday()">This Month</button></div></div>
 <div class="daily-cal-grid"><div class="daily-cal-header"><div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div></div><div class="daily-cal-body" id="dcal-body"></div></div></div></div>
 
-<!-- WEEKLY LOG -->
+<!-- WEEKLY LOG & DASHBOARD -->
 <div class="page" id="page-weekly">
-<div class="page-header"><h2>Weekly Log</h2><div class="page-subtitle">Your week at a glance</div></div>
-<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
-<div class="date-nav">
-<button onclick="chWeek(-1)">← Prev Week</button>
-<div class="date-display" id="week-display"></div>
-<button onclick="chWeek(1)">Next Week →</button>
-<button onclick="goThisWeek()">This Week</button>
-</div></div>
+<div class="page-header"><h2>Weekly Dashboard</h2><div class="page-subtitle">Your weekly schedule, focus areas, goals, checklists & notes</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+  <div class="date-nav">
+    <button onclick="chWeek(-1)">← Prev Week</button>
+    <div class="date-display" id="week-display"></div>
+    <button onclick="chWeek(1)">Next Week →</button>
+    <button onclick="goThisWeek()">This Week</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="openWeeklyAreaModal()" style="display:inline-flex;align-items:center;gap:6px">
+      <span style="font-weight:700;font-size:1.1rem;line-height:1">+</span> Add Area
+    </button>
+  </div>
+</div>
 <div class="week-summary" id="week-summary"></div>
 <div class="weekly-grid" id="weekly-grid"></div>
-<div class="weekly-goals">
-<h3>🎯 Weekly Goals</h3>
-<div class="add-entry-form" style="margin-bottom:14px">
-<input type="text" class="entry-input" id="wg-input" placeholder="Add a weekly goal..." onkeydown="if(event.key==='Enter')addWeekGoal()">
-<button class="btn btn-primary" onclick="addWeekGoal()">Add</button>
-</div>
-<ul class="weekly-goals-list" id="wg-list"></ul>
-</div>
+<div class="weekly-dashboard" id="weekly-dashboard-root"></div>
 </div>
 
 <!-- MONTHLY -->
 <div class="page" id="page-monthly">
-<div class="page-header"><h2>Monthly Log</h2><div class="page-subtitle">Month overview</div></div>
-<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px"><div class="date-nav"><button onclick="chMon(-1)">←</button><div class="date-display" id="month-display"></div><button onclick="chMon(1)">→</button><button onclick="goMon()">This Month</button></div></div>
+<div class="page-header"><h2>Monthly Dashboard</h2><div class="page-subtitle">Monthly command center with customizable focus areas, goals, checklists & notes</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px">
+  <div class="date-nav">
+    <button onclick="chMon(-1)" aria-label="Previous Month">←</button>
+    <div class="date-display" id="month-display"></div>
+    <button onclick="chMon(1)" aria-label="Next Month">→</button>
+    <button onclick="goMon()">This Month</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="openAreaModal()" style="display:inline-flex;align-items:center;gap:6px">
+      <span style="font-weight:700;font-size:1.1rem;line-height:1">+</span> Add Area
+    </button>
+  </div>
+</div>
 <div class="calendar-grid"><div class="calendar-header"><div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div></div><div class="calendar-body" id="cal-body"></div></div>
-<div class="monthly-tasks"><h3>Monthly Tasks</h3><div class="add-entry-form" style="margin-top:10px;margin-bottom:14px"><select class="entry-type-select" id="m-type"><option value="task">• Task</option><option value="event">○ Event</option><option value="note">— Note</option></select><input type="text" class="entry-input" id="m-text" placeholder="Add monthly task..." onkeydown="if(event.key==='Enter')addME()"><button class="btn btn-primary" onclick="addME()">Add</button></div><ul class="entries-list" id="m-entries"></ul></div></div>
+<div class="monthly-dashboard" id="monthly-dashboard-root"></div>
+</div>
 
 <!-- FUTURE -->
 <div class="page" id="page-future">
@@ -3526,18 +4263,174 @@ html, body {
 <!-- MODALS -->
 <div class="modal-overlay" id="day-modal">
 <div class="modal"><h3 id="dm-title"></h3>
-<div class="add-entry-form" style="margin:14px 0"><select class="entry-type-select" id="dm-type"><option value="task">• Task</option><option value="event">○ Event</option><option value="note">— Note</option></select><input type="text" class="entry-input" id="dm-input" placeholder="Add entry..." onkeydown="if(event.key==='Enter')addDME()"><button class="btn btn-primary" onclick="addDME()">Add</button></div>
+<div class="add-entry-form" style="margin:14px 0">
+  <div class="custom-type-picker" id="ctp-dm">
+    <input type="hidden" id="dm-type" value="task">
+    <button type="button" class="custom-type-trigger" onclick="toggleCustomTypePicker('ctp-dm')" aria-label="Select entry type">
+      <span class="ct-badge">•</span>
+      <span class="ct-text">Task</span>
+      <span class="ct-arrow">▾</span>
+    </button>
+    <div class="custom-type-menu">
+      <button type="button" class="custom-type-option selected" onclick="selectCustomType('ctp-dm', 'dm-type', 'task', '•', 'Task')">
+        <div class="cto-left"><span class="cto-bullet">•</span><span>Task</span></div><span class="cto-check">✓</span>
+      </button>
+      <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-dm', 'dm-type', 'event', '○', 'Event')">
+        <div class="cto-left"><span class="cto-bullet">○</span><span>Event</span></div><span class="cto-check">✓</span>
+      </button>
+      <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-dm', 'dm-type', 'note', '—', 'Note')">
+        <div class="cto-left"><span class="cto-bullet">—</span><span>Note</span></div><span class="cto-check">✓</span>
+      </button>
+    </div>
+  </div>
+  <input type="text" class="entry-input" id="dm-input" placeholder="Add entry..." onkeydown="if(event.key==='Enter')addDME()">
+  <button class="btn btn-primary" onclick="addDME()">Add</button>
+</div>
 <ul class="entries-list" id="dm-entries"></ul>
 <div style="margin-top:16px;text-align:right"><button class="btn btn-ghost" onclick="closeDM()">Close</button><button class="btn btn-primary" onclick="dmToDaily()" style="margin-left:6px">Open in Daily</button></div></div></div>
 
 <div class="modal-overlay" id="edit-entry-modal">
 <div class="modal"><h3>Edit Entry</h3>
-<div style="display:flex;flex-direction:column;gap:12px;margin:16px 0">
-  <div class="form-group" style="flex:none"><label for="edit-entry-type">Type</label><select class="entry-type-select" id="edit-entry-type" style="width:100%"><option value="task">• Task</option><option value="event">○ Event</option><option value="note">— Note</option></select></div>
-  <div class="form-group" style="flex:none"><label for="edit-entry-text">Text</label><input type="text" class="entry-input" id="edit-entry-text" style="width:100%" placeholder="Entry text..."></div>
-  <div class="form-group" style="flex:none;display:flex;align-items:center;gap:6px"><label class="checkbox-inline"><input type="checkbox" id="edit-entry-priority"><span style="color:var(--rose)">★ Priority</span></label></div>
+<div style="display:flex;flex-direction:column;gap:14px;margin:16px 0">
+  <div class="form-group" style="flex:none">
+    <label for="edit-entry-type" style="display:block;margin-bottom:6px;font-size:0.75rem;font-weight:700;color:var(--text-secondary)">ENTRY TYPE</label>
+    <div class="custom-type-picker" id="ctp-edit-entry" style="width:100%">
+      <input type="hidden" id="edit-entry-type" value="task">
+      <button type="button" class="custom-type-trigger" onclick="toggleCustomTypePicker('ctp-edit-entry')" aria-label="Select entry type" style="width:100%;justify-content:space-between">
+        <span style="display:inline-flex;align-items:center;gap:8px"><span class="ct-badge">•</span><span class="ct-text">Task</span></span>
+        <span class="ct-arrow">▾</span>
+      </button>
+      <div class="custom-type-menu" style="width:100%">
+        <button type="button" class="custom-type-option selected" onclick="selectCustomType('ctp-edit-entry', 'edit-entry-type', 'task', '•', 'Task')">
+          <div class="cto-left"><span class="cto-bullet">•</span><span>Task</span></div><span class="cto-check">✓</span>
+        </button>
+        <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-edit-entry', 'edit-entry-type', 'goal', '🎯', 'Goal')">
+          <div class="cto-left"><span class="cto-bullet">🎯</span><span>Goal</span></div><span class="cto-check">✓</span>
+        </button>
+        <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-edit-entry', 'edit-entry-type', 'event', '○', 'Event')">
+          <div class="cto-left"><span class="cto-bullet">○</span><span>Event</span></div><span class="cto-check">✓</span>
+        </button>
+        <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-edit-entry', 'edit-entry-type', 'note', '—', 'Note')">
+          <div class="cto-left"><span class="cto-bullet">—</span><span>Note</span></div><span class="cto-check">✓</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group" style="flex:none"><label for="edit-entry-text" style="display:block;margin-bottom:6px;font-size:0.75rem;font-weight:700;color:var(--text-secondary)">ENTRY CONTENT</label><input type="text" class="entry-input" id="edit-entry-text" style="width:100%" placeholder="Entry text..."></div>
+  <div class="form-group" style="flex:none;display:flex;align-items:center;gap:6px"><label class="checkbox-inline"><input type="checkbox" id="edit-entry-priority"><span style="color:var(--rose);font-weight:700">★ Priority Focus</span></label></div>
 </div>
 <div style="margin-top:16px;text-align:right"><button class="btn btn-ghost" onclick="closeEditEntryModal()">Cancel</button><button class="btn btn-primary" onclick="saveEditedEntry()" style="margin-left:6px">Save Changes</button></div></div></div>
+
+<!-- WEEKLY AREA MODAL -->
+<div class="modal-overlay" id="weekly-area-modal" role="dialog" aria-modal="true" aria-labelledby="w-area-modal-title">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 id="w-area-modal-title" style="margin:0">Create Weekly Focus Area</h3>
+      <button class="entry-action-btn delete" onclick="closeWeeklyAreaModal()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Quick Templates -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:0.65rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Quick Templates</label>
+      <div class="weekly-template-pills">
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Focus Targets','⚡','#a78bfa')">⚡ Focus</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Studies','📚','#60a5fa')">📚 Studies</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Gym & Fitness','💪','#34d399')">💪 Gym</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Side Projects','💻','#fbbf24')">💻 Projects</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Personal','🌱','#c084fc')">🌱 Personal</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Deliverables','🎯','#fb7185')">🎯 Deliverables</button>
+        <button type="button" class="weekly-template-btn" onclick="applyWeeklyAreaPreset('Habits Focus','✅','#14b8a6')">✅ Habits</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group" style="flex:none">
+        <label for="w-area-title-input">Area Name</label>
+        <input type="text" class="entry-input" id="w-area-title-input" style="width:100%" placeholder="e.g. Focus Targets, Studies, Gym, Projects..." onkeydown="if(event.key==='Enter')saveWeeklyAreaModal()">
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label>Area Icon / Emoji</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <input type="text" id="w-area-custom-emoji" class="entry-input" style="width:64px;text-align:center;font-size:1.2rem" maxlength="4" placeholder="⚡" oninput="setWeeklyCustomAreaEmoji(this.value)">
+          <span style="font-size:0.75rem;color:var(--text-tertiary)">Pick below or type any emoji</span>
+        </div>
+        <div class="area-emoji-grid" id="w-area-emoji-preset-grid"></div>
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label>Color Accent</label>
+        <div class="area-swatch-grid" id="w-area-color-swatch-grid"></div>
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label for="w-area-notes-input">Initial Notes / Focus (Optional)</label>
+        <textarea id="w-area-notes-input" class="weekly-area-notes-box" style="margin-top:0;min-height:50px" placeholder="Weekly targets, deliverables, or checklist notes..."></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn btn-ghost" onclick="closeWeeklyAreaModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWeeklyAreaModal()" id="w-area-save-btn">Save Area</button>
+    </div>
+  </div>
+</div>
+
+<!-- MONTHLY AREA MODAL -->
+<div class="modal-overlay" id="monthly-area-modal" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 id="area-modal-title" style="margin:0">Create Goal Area</h3>
+      <button class="entry-action-btn delete" onclick="closeAreaModal()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Quick Templates -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:0.65rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Quick Templates</label>
+      <div class="monthly-template-pills">
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Studies','📚','#a78bfa')">📚 Studies</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Gym & Fitness','💪','#34d399')">💪 Gym</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Side Projects','💻','#60a5fa')">💻 Projects</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Personal','🌱','#fbbf24')">🌱 Personal</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Finances','💰','#14b8a6')">💰 Finances</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Health','🧘','#f97316')">🧘 Health</button>
+        <button type="button" class="monthly-template-btn" onclick="applyAreaPreset('Reading','📖','#c084fc')">📖 Reading</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group" style="flex:none">
+        <label for="area-title-input">Area Name</label>
+        <input type="text" class="entry-input" id="area-title-input" style="width:100%" placeholder="e.g. Studies, Gym, Career, Projects..." onkeydown="if(event.key==='Enter')saveAreaModal()">
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label>Area Icon / Emoji</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <input type="text" id="area-custom-emoji" class="entry-input" style="width:64px;text-align:center;font-size:1.2rem" maxlength="4" placeholder="📚" oninput="setCustomAreaEmoji(this.value)">
+          <span style="font-size:0.75rem;color:var(--text-tertiary)">Pick below or type any emoji</span>
+        </div>
+        <div class="area-emoji-grid" id="area-emoji-preset-grid"></div>
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label>Color Accent</label>
+        <div class="area-swatch-grid" id="area-color-swatch-grid"></div>
+      </div>
+
+      <div class="form-group" style="flex:none">
+        <label for="area-notes-input">Initial Notes / Objective (Optional)</label>
+        <textarea id="area-notes-input" class="monthly-area-notes-box" style="margin-top:0;min-height:50px" placeholder="Set monthly objectives, target routines, or key priorities..."></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn btn-ghost" onclick="closeAreaModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAreaModal()" id="area-save-btn">Save Area</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- QUICK ADD MODAL -->
 <div class="modal-overlay" id="quick-add-modal" role="dialog" aria-modal="true" aria-labelledby="qa-title">
@@ -3546,12 +4439,25 @@ html, body {
       <h3 id="qa-title" style="margin:0">Quick Action Log</h3>
       <button class="entry-action-btn delete" onclick="closeQuickAddModal()" aria-label="Close Quick Action Log">✕</button>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:14px">
-      <select id="qa-type" class="entry-type-select" style="flex:0 0 110px">
-        <option value="task">• Task</option>
-        <option value="event">○ Event</option>
-        <option value="note">— Note</option>
-      </select>
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+      <div class="custom-type-picker" id="ctp-qa">
+        <input type="hidden" id="qa-type" value="task">
+        <button type="button" class="custom-type-trigger" onclick="toggleCustomTypePicker('ctp-qa')" aria-label="Select entry type" style="min-width:105px;justify-content:space-between">
+          <span style="display:inline-flex;align-items:center;gap:6px"><span class="ct-badge">•</span><span class="ct-text">Task</span></span>
+          <span class="ct-arrow">▾</span>
+        </button>
+        <div class="custom-type-menu">
+          <button type="button" class="custom-type-option selected" onclick="selectCustomType('ctp-qa', 'qa-type', 'task', '•', 'Task')">
+            <div class="cto-left"><span class="cto-bullet">•</span><span>Task</span></div><span class="cto-check">✓</span>
+          </button>
+          <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-qa', 'qa-type', 'event', '○', 'Event')">
+            <div class="cto-left"><span class="cto-bullet">○</span><span>Event</span></div><span class="cto-check">✓</span>
+          </button>
+          <button type="button" class="custom-type-option" onclick="selectCustomType('ctp-qa', 'qa-type', 'note', '—', 'Note')">
+            <div class="cto-left"><span class="cto-bullet">—</span><span>Note</span></div><span class="cto-check">✓</span>
+          </button>
+        </div>
+      </div>
       <input type="text" id="qa-input" class="entry-input" placeholder="What's on your mind?" style="flex:1" onkeydown="if(event.key==='Enter')submitQuickAdd()">
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -3836,8 +4742,8 @@ const fD=d=>DA[d.getDay()]+', '+MO[d.getMonth()]+' '+d.getDate()+', '+d.getFullY
 const fM=d=>MO[d.getMonth()]+' '+d.getFullYear();
 const dim=(y,m)=>new Date(y,m+1,0).getDate();
 const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
-const sym=(t,s)=>t==='event'?'○':t==='note'?'—':s==='complete'?'✓':s==='migrated'?'>':s==='scheduled'?'<':'•';
-const bcl=(t,s)=>t==='event'?'event':t==='note'?'note':s||'incomplete';
+const sym=(t,s)=>t==='goal'?(s==='complete'?'✓':'🎯'):t==='event'?'○':t==='note'?'—':s==='complete'?'✓':s==='migrated'?'>':s==='scheduled'?'<':'•';
+const bcl=(t,s)=>t==='goal'?(s==='complete'?'goal complete':s||'goal'):t==='event'?'event':t==='note'?'note':s||'incomplete';
 const tcl=(t,s)=>s==='complete'?'completed':s==='irrelevant'?'irrelevant':'';
 const nxt=c=>{const s=['incomplete','complete','migrated','scheduled','irrelevant'];return s[(s.indexOf(c||'incomplete')+1)%s.length]};
 
@@ -4025,22 +4931,25 @@ function rIndex() {
 
   // 5. WEEKLY FOCUS / GOALS
   const wKey = weekKey(today);
-  const wGoals = D.weeklyGoals[wKey] || [];
+  const wGoals = getWeeklyFlatEntries(wKey);
   const wGoalsCountBadge = document.getElementById('db-weekly-goals-count');
   const wGoalsBody = document.getElementById('db-weekly-goals-body');
 
-  if (wGoalsCountBadge) wGoalsCountBadge.textContent = `${wGoals.length} goal${wGoals.length !== 1 ? 's' : ''}`;
+  if (wGoalsCountBadge) wGoalsCountBadge.textContent = `${wGoals.length} item${wGoals.length !== 1 ? 's' : ''}`;
 
   if (wGoalsBody) {
     let goalsHTML = '';
     if (!wGoals.length) {
       goalsHTML = '<div class="empty-state" style="padding:8px"><p style="font-size:0.78rem">No goals set for this week.</p></div>';
     } else {
-      goalsHTML = wGoals.map(g => `
-        <div class="db-goal-item ${g.state === 'complete' ? 'done' : ''}">
-          <input type="checkbox" ${g.state === 'complete' ? 'checked' : ''} onchange="cycIndexWeeklyGoal('${g.id}')">
-          <span style="flex:1;cursor:pointer" onclick="cycIndexWeeklyGoal('${g.id}')">${esc(g.text)}</span>
-        </div>`).join('');
+      goalsHTML = wGoals.map(g => {
+        const isDone = g.state === 'complete' || g.done === true;
+        return `
+        <div class="db-goal-item ${isDone ? 'done' : ''}">
+          <input type="checkbox" ${isDone ? 'checked' : ''} onchange="cycIndexWeeklyGoal('${g.id}')">
+          <span style="flex:1;cursor:pointer" onclick="cycIndexWeeklyGoal('${g.id}')">${g.type === 'goal' ? '🎯 ' : ''}${esc(g.text)}</span>
+        </div>`;
+      }).join('');
     }
 
     goalsHTML += `
@@ -4089,9 +4998,19 @@ function togIndexHabit(name) {
 // Toggle Weekly Goal state from Index
 function cycIndexWeeklyGoal(id) {
   const k = weekKey(new Date());
-  const g = (D.weeklyGoals[k] || []).find(x => x.id === id);
-  if (!g) return;
-  g.state = g.state === 'complete' ? 'incomplete' : 'complete';
+  let res = findWeeklyItemAndArea(id, k);
+  if (!res.item) res = findWeeklyItemAndArea(id, wgKey());
+  if (!res.item) {
+    for (const wk of Object.keys(D.weeklyGoals || {})) {
+      res = findWeeklyItemAndArea(id, wk);
+      if (res.item) break;
+    }
+  }
+  if (!res.item) return;
+  const g = res.item;
+  const isDone = g.state === 'complete' || g.done === true;
+  g.state = isDone ? 'incomplete' : 'complete';
+  g.done = !isDone;
   save();
   rIndex();
 }
@@ -4103,9 +5022,21 @@ function addIndexWeeklyGoal() {
   const text = input.value.trim();
   if (!text) return;
   const k = weekKey(new Date());
-  if (!D.weeklyGoals[k]) D.weeklyGoals[k] = [];
-  D.weeklyGoals[k].push({ id: gid(), text: text, state: 'incomplete' });
+  const data = ensureWeeklyObject(k);
+  if (!data.areas || !data.areas.length) {
+    data.areas = [{
+      id: gid(),
+      title: 'Weekly Goals',
+      icon: '🎯',
+      color: '#a78bfa',
+      items: [],
+      notes: '',
+      collapsed: false
+    }];
+  }
+  data.areas[0].items.push({ id: gid(), type: 'goal', text: text, priority: false, state: 'incomplete', subtasks: [] });
   save();
+  input.value = '';
   rIndex();
 }
 
@@ -4219,12 +5150,14 @@ let currentQuickType = 'task';
 function openQuickAdd(type) {
   currentQuickType = type || 'task';
   const modal = document.getElementById('quick-add-modal');
-  const typeSelect = document.getElementById('qa-type');
   const titleEl = document.getElementById('qa-title');
   const input = document.getElementById('qa-input');
   const priorityCheck = document.getElementById('qa-priority');
 
-  if (typeSelect) typeSelect.value = currentQuickType;
+  const badge = currentQuickType === 'event' ? '○' : currentQuickType === 'note' ? '—' : '•';
+  const label = currentQuickType === 'event' ? 'Event' : currentQuickType === 'note' ? 'Note' : 'Task';
+  selectCustomType('ctp-qa', 'qa-type', currentQuickType, badge, label);
+
   if (titleEl) titleEl.textContent = `Quick Add ${currentQuickType.toUpperCase()}`;
   if (input) input.value = '';
   if (priorityCheck) priorityCheck.checked = false;
@@ -4591,24 +5524,143 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('active')}
 function showGuide(id,btn){document.querySelectorAll('.guide-panel').forEach(p=>p.style.display='none');document.getElementById('guide-'+id).style.display='block';document.querySelectorAll('.guide-nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
 
+// CUSTOM TYPE SELECTOR HELPERS
+function renderCustomTypePickerHTML(pickerId, inputId, defaultVal = 'task', isGoalSupported = true) {
+  const options = isGoalSupported ? [
+    { value: 'goal', badge: '🎯', label: 'Goal' },
+    { value: 'task', badge: '•', label: 'Task' },
+    { value: 'event', badge: '○', label: 'Event' },
+    { value: 'note', badge: '—', label: 'Note' }
+  ] : [
+    { value: 'task', badge: '•', label: 'Task' },
+    { value: 'event', badge: '○', label: 'Event' },
+    { value: 'note', badge: '—', label: 'Note' }
+  ];
+
+  const current = options.find(o => o.value === defaultVal) || options[0];
+
+  return `
+    <div class="custom-type-picker" id="${pickerId}">
+      <input type="hidden" id="${inputId}" value="${current.value}">
+      <button type="button" class="custom-type-trigger" onclick="toggleCustomTypePicker('${pickerId}')" aria-label="Select entry type">
+        <span class="ct-badge">${current.badge}</span>
+        <span class="ct-text">${current.label}</span>
+        <span class="ct-arrow">▾</span>
+      </button>
+      <div class="custom-type-menu">
+        ${options.map(opt => `
+          <button type="button" class="custom-type-option ${opt.value === current.value ? 'selected' : ''}" onclick="selectCustomType('${pickerId}', '${inputId}', '${opt.value}', '${opt.badge}', '${opt.label}')">
+            <div class="cto-left">
+              <span class="cto-bullet">${opt.badge}</span>
+              <span>${opt.label}</span>
+            </div>
+            <span class="cto-check">✓</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function toggleCustomTypePicker(pickerId) {
+  const picker = document.getElementById(pickerId);
+  if (!picker) return;
+  const menu = picker.querySelector('.custom-type-menu');
+  const trigger = picker.querySelector('.custom-type-trigger');
+  const isOpen = menu && menu.classList.contains('open');
+
+  document.querySelectorAll('.custom-type-menu.open').forEach(m => {
+    if (m !== menu) {
+      m.classList.remove('open');
+      const tr = m.closest('.custom-type-picker')?.querySelector('.custom-type-trigger');
+      if (tr) tr.classList.remove('open');
+      const card = m.closest('.monthly-area-card, .weekly-area-card');
+      if (card) card.style.zIndex = '';
+    }
+  });
+
+  if (menu && trigger) {
+    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card');
+    if (isOpen) {
+      menu.classList.remove('open');
+      trigger.classList.remove('open');
+      if (parentCard) parentCard.style.zIndex = '';
+    } else {
+      // Check if inside area card or bottom of viewport to drop up
+      const rect = trigger.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const isInsideAreaCard = !!parentCard;
+      if (spaceBelow < 210 || isInsideAreaCard) {
+        picker.classList.add('dropup');
+      } else {
+        picker.classList.remove('dropup');
+      }
+
+      menu.classList.add('open');
+      trigger.classList.add('open');
+      if (parentCard) parentCard.style.zIndex = '1000';
+    }
+  }
+}
+
+function selectCustomType(pickerId, inputId, value, badge, label) {
+  const picker = document.getElementById(pickerId);
+  const input = document.getElementById(inputId);
+  if (input) input.value = value;
+
+  if (picker) {
+    const badgeEl = picker.querySelector('.ct-badge');
+    const textEl = picker.querySelector('.ct-text');
+    const menu = picker.querySelector('.custom-type-menu');
+    const trigger = picker.querySelector('.custom-type-trigger');
+    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card');
+
+    if (badgeEl) badgeEl.textContent = badge;
+    if (textEl) textEl.textContent = label;
+
+    picker.querySelectorAll('.custom-type-option').forEach(opt => {
+      opt.classList.remove('selected');
+    });
+
+    const selectedOption = Array.from(picker.querySelectorAll('.custom-type-option')).find(o => o.textContent.includes(label));
+    if (selectedOption) selectedOption.classList.add('selected');
+
+    if (menu) menu.classList.remove('open');
+    if (trigger) trigger.classList.remove('open');
+    if (parentCard) parentCard.style.zIndex = '';
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-type-picker')) {
+    document.querySelectorAll('.custom-type-menu.open').forEach(m => {
+      m.classList.remove('open');
+      const tr = m.closest('.custom-type-picker')?.querySelector('.custom-type-trigger');
+      if (tr) tr.classList.remove('open');
+      const card = m.closest('.monthly-area-card, .weekly-area-card');
+      if (card) card.style.zIndex = '';
+    });
+  }
+});
+
 // ENTRY RENDER
-function rE(e,ctx){const s=sym(e.type,e.state),bc=bcl(e.type,e.state),tc=tcl(e.type,e.state),pri=e.priority?'<span class="entry-priority">★ </span>':'';const subs=e.subtasks||[];const hasSubs=subs.length>0;const subDone=subs.filter(x=>x.state==='complete').length;const eid=e.id;
-let cyc,del,prio;switch(ctx){case'daily':cyc=`cyc('${eid}')`;del=`delE('${eid}')`;prio=`priE('${eid}')`;break;case'monthly':cyc=`cycM('${eid}')`;del=`delME('${eid}')`;prio=`priME('${eid}')`;break;case'modal':cyc=`cycDM('${eid}')`;del=`delDME('${eid}')`;prio=`priDM('${eid}')`;break;case'project':cyc=`cycPJ('${eid}')`;del=`delPJE('${eid}')`;prio=`priPJ('${eid}')`;break;default:cyc='';del='';prio=''}
+function rE(e,ctx){const isTaskLike=e.type==='task'||e.type==='goal';const s=sym(e.type,e.state),bc=bcl(e.type,e.state),tc=tcl(e.type,e.state),pri=e.priority?'<span class="entry-priority">★ </span>':'';const subs=e.subtasks||[];const hasSubs=subs.length>0;const subDone=subs.filter(x=>x.state==='complete').length;const eid=e.id;
+let cyc,del,prio;switch(ctx){case'daily':cyc=`cyc('${eid}')`;del=`delE('${eid}')`;prio=`priE('${eid}')`;break;case'monthly':cyc=`cycM('${eid}')`;del=`delME('${eid}')`;prio=`priME('${eid}')`;break;case'weekly_goal':cyc=`cycWG('${eid}')`;del=`delWG('${eid}')`;prio=`priWG('${eid}')`;break;case'modal':cyc=`cycDM('${eid}')`;del=`delDME('${eid}')`;prio=`priDM('${eid}')`;break;case'project':cyc=`cycPJ('${eid}')`;del=`delPJE('${eid}')`;prio=`priPJ('${eid}')`;break;default:cyc='';del='';prio=''}
 let subsHtml='';const asFn=`addSub_${ctx}('${eid}')`;
 if(hasSubs){subsHtml+=`<div class="subtasks-container" id="subs-${eid}">`;subs.forEach(sub=>{const ss=sym('task',sub.state),sbc=bcl('task',sub.state),stc=tcl('task',sub.state);subsHtml+=`<div class="subtask-item"><div class="subtask-bullet ${sbc}" onclick="cycSub_${ctx}('${eid}','${sub.id}')">${ss}</div><div class="subtask-text ${stc}" style="cursor:pointer" onclick="cycSub_${ctx}('${eid}','${sub.id}')">${inl(sub.text)}</div><div class="subtask-actions"><button class="subtask-action-btn delete" onclick="delSub_${ctx}('${eid}','${sub.id}')">✕</button></div></div>`});subsHtml+=`<div class="add-subtask"><input type="text" placeholder="Add subtask..." id="subin-${eid}" onkeydown="if(event.key==='Enter')${asFn}"><button onclick="${asFn}">+</button></div></div>`}
-const togBtn=e.type==='task'?`<button class="entry-action-btn" onclick="togSubs('${eid}')">＋</button>`:'';
+const togBtn=isTaskLike?`<button class="entry-action-btn" onclick="togSubs('${eid}')">＋</button>`:'';
 const subBd=hasSubs?`<span class="subtask-count">${subDone}/${subs.length}</span>`:'';
-const hidSub=!hasSubs&&e.type==='task'?`<div class="subtasks-container" id="subs-${eid}" style="display:none"><div class="add-subtask"><input type="text" placeholder="Add subtask..." id="subin-${eid}" onkeydown="if(event.key==='Enter')${asFn}"><button onclick="${asFn}">+</button></div></div>`:'';
-return`<li class="entry-item"><div class="entry-bullet ${bc}" onclick="${cyc}">${s}</div><div class="entry-content"><div class="entry-text ${tc}" ${e.type==='task'?`style="cursor:pointer" onclick="${cyc}"`:''}>${pri}${inl(e.text)}${subBd}</div>${subsHtml}${hidSub}</div><div class="entry-actions"><button class="entry-action-btn edit" onclick="openEditEntryModal('${ctx}','${eid}')">✏️</button>${e.type==='task'?`<button class="entry-action-btn" onclick="${prio}">${e.priority?'☆':'★'}</button>`:''} ${togBtn}<button class="entry-action-btn delete" onclick="${del}">✕</button></div></li>`}
+const hidSub=!hasSubs&&isTaskLike?`<div class="subtasks-container" id="subs-${eid}" style="display:none"><div class="add-subtask"><input type="text" placeholder="Add subtask..." id="subin-${eid}" onkeydown="if(event.key==='Enter')${asFn}"><button onclick="${asFn}">+</button></div></div>`:'';
+return`<li class="entry-item"><div class="entry-bullet ${bc}" onclick="${cyc}">${s}</div><div class="entry-content"><div class="entry-text ${tc}" ${isTaskLike?`style="cursor:pointer" onclick="${cyc}"`:''}>${pri}${inl(e.text)}${subBd}</div>${subsHtml}${hidSub}</div><div class="entry-actions"><button class="entry-action-btn edit" onclick="openEditEntryModal('${ctx}','${eid}')">✏️</button>${isTaskLike?`<button class="entry-action-btn" onclick="${prio}">${e.priority?'☆':'★'}</button>`:''} ${togBtn}<button class="entry-action-btn delete" onclick="${del}">✕</button></div></li>`}
 function togSubs(eid){const el=document.getElementById('subs-'+eid);if(el){el.style.display=el.style.display==='none'?'block':'none';const inp=document.getElementById('subin-'+eid);if(inp&&el.style.display==='block')setTimeout(()=>inp.focus(),50)}}
 
 // SUBTASK HELPERS
-function _gE(ctx){switch(ctx){case'daily':return D.dailyLogs[dk(curDay)]||[];case'monthly':return D.monthlyLogs[mkk(curMonth)]||[];case'modal':return D.dailyLogs[modalDt]||[];case'project':return activeProj!==null?D.projects[activeProj].tasks:[];default:return[]}}
-function _rr(ctx){switch(ctx){case'daily':rDL();break;case'monthly':rME();break;case'modal':rDME();break;case'project':rPJD();break}}
+function _gE(ctx){switch(ctx){case'daily':return D.dailyLogs[dk(curDay)]||[];case'monthly':return getMonthlyFlatEntries(mkk(curMonth));case'weekly_goal':return getWeeklyFlatEntries(wgKey());case'modal':return D.dailyLogs[modalDt]||[];case'project':return activeProj!==null?D.projects[activeProj].tasks:[];default:return[]}}
+function _rr(ctx){switch(ctx){case'daily':rDL();break;case'monthly':rME();break;case'weekly_goal':rWG();break;case'modal':rDME();break;case'project':rPJD();break}}
 function _aS(ctx,eid){const e=_gE(ctx).find(x=>x.id===eid);if(!e)return;const inp=document.getElementById('subin-'+eid);const t=inp?inp.value.trim():'';if(!t)return;if(!e.subtasks)e.subtasks=[];e.subtasks.push({id:gid(),text:t,state:'incomplete'});save();inp.value='';_rr(ctx)}
 function _cS(ctx,eid,sid){const e=_gE(ctx).find(x=>x.id===eid);if(!e)return;const s=(e.subtasks||[]).find(x=>x.id===sid);if(s)s.state=nxt(s.state);save();_rr(ctx)}
 function _dS(ctx,eid,sid){const e=_gE(ctx).find(x=>x.id===eid);if(!e)return;e.subtasks=(e.subtasks||[]).filter(x=>x.id!==sid);save();_rr(ctx)}
-['daily','monthly','modal','project'].forEach(ctx=>{window['addSub_'+ctx]=(eid)=>_aS(ctx,eid);window['cycSub_'+ctx]=(eid,sid)=>_cS(ctx,eid,sid);window['delSub_'+ctx]=(eid,sid)=>_dS(ctx,eid,sid)});
+['daily','monthly','weekly_goal','modal','project'].forEach(ctx=>{window['addSub_'+ctx]=(eid)=>_aS(ctx,eid);window['cycSub_'+ctx]=(eid,sid)=>_cS(ctx,eid,sid);window['delSub_'+ctx]=(eid,sid)=>_dS(ctx,eid,sid)});
 
 // DAILY LOG FILTERING & MIGRATION STATE
 let currentDailyFilter = 'all';
@@ -4896,48 +5948,1272 @@ function goToDayFromWeek(dkey){
 function chWeek(o){weekStart.setDate(weekStart.getDate()+(o*7));rW()}
 function goThisWeek(){weekStart=getWeekStart(new Date());rW()}
 
-// Weekly Goals
-function wgKey(){return dk(weekStart)}
-function rWG(){
-  const k=wgKey();
-  const goals=D.weeklyGoals[k]||[];
-  const c=document.getElementById('wg-list');
-  if(!goals.length){c.innerHTML='<div class="empty-state" style="padding:18px"><p>No goals for this week</p></div>';return}
-  c.innerHTML=goals.map(g=>`<li class="wg-item">
-    <div class="wg-check${g.done?' done':''}" onclick="togWG('${g.id}')">${g.done?'✓':''}</div>
-    <div class="wg-text${g.done?' done':''}" style="cursor:pointer" onclick="togWG('${g.id}')">${inl(g.text)}</div>
-    <button class="wg-del" onclick="delWG('${g.id}')">✕</button>
-  </li>`).join('');
-}
-function addWeekGoal(){
-  const inp=document.getElementById('wg-input');
-  const text=inp.value.trim();if(!text)return;
-  const k=wgKey();
-  if(!D.weeklyGoals[k])D.weeklyGoals[k]=[];
-  D.weeklyGoals[k].push({id:gid(),text,done:false});
-  save();inp.value='';rWG();
-}
-function togWG(id){
-  const k=wgKey();
-  const g=(D.weeklyGoals[k]||[]).find(x=>x.id===id);
-  if(g){g.done=!g.done;save();rWG()}
-}
-function delWG(id){
-  const k=wgKey();
-  D.weeklyGoals[k]=(D.weeklyGoals[k]||[]).filter(x=>x.id!==id);
-  save();rWG();
+// ═══════════════════ WEEKLY DASHBOARD ENGINE ═══════════════════
+let weeklyActiveFilter = 'all'; // 'all' | 'goal' | 'task' | 'pending' | 'complete'
+let weeklySearchQuery = '';
+let editingWeeklyAreaId = null;
+let currentWeeklyAreaColor = '#a78bfa';
+let currentWeeklyAreaEmoji = '⚡';
+
+const WEEKLY_COLOR_PALETTE = ['#a78bfa', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#22d3ee', '#fb7185', '#f97316', '#14b8a6', '#818cf8', '#e2e8f0'];
+const WEEKLY_EMOJI_PRESETS = ['⚡', '🎯', '📚', '💪', '💻', '🌱', '✅', '🔥', '🧠', '💰', '🧘', '📖', '🚀', '🛠️', '🎨', '💼', '🏆', '⭐', '🍎', '🎵'];
+
+function wgKey() {
+  return dk(weekStart);
 }
 
-// MONTHLY
-function rMon(){document.getElementById('month-display').textContent=fM(curMonth);rCal();rME()}
-function rCal(){const y=curMonth.getFullYear(),m=curMonth.getMonth(),fd=new Date(y,m,1).getDay(),td=dim(y,m),tk=dk(new Date());let h='';const pd=dim(y,m-1);for(let i=fd-1;i>=0;i--)h+=`<div class="calendar-day other-month"><div class="day-number">${pd-i}</div></div>`;for(let d=1;d<=td;d++){const dkey=dk(new Date(y,m,d)),isT=dkey===tk,en=D.dailyLogs[dkey]||[];const dots=en.slice(0,5).map(e=>`<div class="day-dot ${e.type}"></div>`).join('');h+=`<div class="calendar-day${isT?' today':''}" onclick="openDM('${dkey}')"><div class="day-number">${d}</div><div class="day-dots">${dots}</div></div>`}const tc=fd+td,r=(7-(tc%7))%7;for(let d=1;d<=r;d++)h+=`<div class="calendar-day other-month"><div class="day-number">${d}</div></div>`;document.getElementById('cal-body').innerHTML=h}
-function rME(){const en=D.monthlyLogs[mkk(curMonth)]||[];const c=document.getElementById('m-entries');if(!en.length){c.innerHTML='<div class="empty-state"><p>No monthly tasks</p></div>';return}c.innerHTML=en.map(e=>rE(e,'monthly')).join('')}
-function addME(){const t=document.getElementById('m-type').value,x=document.getElementById('m-text').value.trim();if(!x)return;const k=mkk(curMonth);if(!D.monthlyLogs[k])D.monthlyLogs[k]=[];D.monthlyLogs[k].push({id:gid(),type:t,text:x,priority:false,state:t==='task'?'incomplete':null,subtasks:[]});save();document.getElementById('m-text').value='';rME()}
-function cycM(id){const k=mkk(curMonth),e=(D.monthlyLogs[k]||[]).find(x=>x.id===id);if(!e||e.type!=='task')return;e.state=nxt(e.state);save();rME()}
-function priME(id){const k=mkk(curMonth),e=(D.monthlyLogs[k]||[]).find(x=>x.id===id);if(e){e.priority=!e.priority;save();rME()}}
-function delME(id){const k=mkk(curMonth);const e=(D.monthlyLogs[k]||[]).find(x=>x.id===id);if(e){moveToTrash('monthly',k,e);D.monthlyLogs[k]=D.monthlyLogs[k].filter(x=>x.id!==id);save();rME()}}
-function chMon(o){curMonth.setMonth(curMonth.getMonth()+o);rMon()}
-function goMon(){curMonth=new Date();rMon()}
+// 1. Data Normalization & Backward Compatibility
+function getWeeklyData(k) {
+  const raw = D.weeklyGoals[k];
+  if (!raw) return { areas: [] };
+  if (Array.isArray(raw)) {
+    return {
+      areas: [{
+        id: 'legacy_weekly_default',
+        title: 'Weekly Goals',
+        icon: '🎯',
+        color: '#a78bfa',
+        items: raw.map(g => ({
+          id: g.id || gid(),
+          type: g.type || 'goal',
+          text: g.text,
+          priority: !!g.priority,
+          state: g.state || (g.done ? 'complete' : 'incomplete'),
+          subtasks: g.subtasks || []
+        })),
+        notes: '',
+        collapsed: false
+      }]
+    };
+  }
+  if (raw.areas && Array.isArray(raw.areas)) return raw;
+  return { areas: [] };
+}
+
+function ensureWeeklyObject(k) {
+  if (!D.weeklyGoals[k]) {
+    D.weeklyGoals[k] = { areas: [] };
+  } else if (Array.isArray(D.weeklyGoals[k])) {
+    D.weeklyGoals[k] = {
+      areas: [{
+        id: 'legacy_weekly_default',
+        title: 'Weekly Goals',
+        icon: '🎯',
+        color: '#a78bfa',
+        items: D.weeklyGoals[k].map(g => ({
+          id: g.id || gid(),
+          type: g.type || 'goal',
+          text: g.text,
+          priority: !!g.priority,
+          state: g.state || (g.done ? 'complete' : 'incomplete'),
+          subtasks: g.subtasks || []
+        })),
+        notes: '',
+        collapsed: false
+      }]
+    };
+  }
+  return D.weeklyGoals[k];
+}
+
+function getWeeklyFlatEntries(k) {
+  const data = getWeeklyData(k);
+  const result = [];
+  (data.areas || []).forEach(area => {
+    (area.items || []).forEach(item => {
+      result.push(item);
+    });
+  });
+  return result;
+}
+
+function findWeeklyItemAndArea(id, weekK = null) {
+  const k = weekK || wgKey();
+  const data = ensureWeeklyObject(k);
+  for (const area of (data.areas || [])) {
+    const item = (area.items || []).find(x => x.id === id);
+    if (item) return { area, item, weekKey: k };
+  }
+  return { area: null, item: null, weekKey: k };
+}
+
+// 2. Render Weekly Dashboard
+function rWG() {
+  const k = wgKey();
+  const root = document.getElementById('weekly-dashboard-root');
+  if (!root) return;
+
+  const wData = getWeeklyData(k);
+  const areas = wData.areas || [];
+
+  let totalItems = 0, completedItems = 0;
+  let totalGoals = 0, doneGoals = 0;
+  let totalTasks = 0, doneTasks = 0;
+
+  areas.forEach(area => {
+    (area.items || []).forEach(item => {
+      totalItems++;
+      const isDone = item.state === 'complete' || item.done === true;
+      if (isDone) completedItems++;
+
+      if (item.type === 'goal') {
+        totalGoals++;
+        if (isDone) doneGoals++;
+      } else if (item.type === 'task') {
+        totalTasks++;
+        if (isDone) doneTasks++;
+      }
+    });
+  });
+
+  const overallPct = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+  let html = `
+    <div class="weekly-overview-card">
+      <div class="weekly-overview-top">
+        <div class="weekly-overview-title-group">
+          <h3>⚡ Weekly Focus Areas & Goals</h3>
+        </div>
+        <div class="weekly-stats-strip">
+          <div class="weekly-stat-pill highlight">
+            <span>Overall</span>
+            <strong>${overallPct}%</strong>
+          </div>
+          <div class="weekly-stat-pill">
+            <span>Areas</span>
+            <strong>${areas.length}</strong>
+          </div>
+          <div class="weekly-stat-pill">
+            <span>Goals</span>
+            <strong>${doneGoals}/${totalGoals}</strong>
+          </div>
+          <div class="weekly-stat-pill">
+            <span>Tasks</span>
+            <strong>${doneTasks}/${totalTasks}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="weekly-progress-track" title="${completedItems} of ${totalItems} items completed (${overallPct}%)">
+        <div class="weekly-progress-fill" style="width:${overallPct}%"></div>
+      </div>
+
+      <div class="weekly-toolbar">
+        <div class="weekly-template-pills">
+          <span class="weekly-template-label">Quick Add:</span>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Focus Targets','⚡','#a78bfa')">+ ⚡ Focus</button>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Studies','📚','#60a5fa')">+ 📚 Studies</button>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Gym & Fitness','💪','#34d399')">+ 💪 Gym</button>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Side Projects','💻','#fbbf24')">+ 💻 Projects</button>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Personal','🌱','#c084fc')">+ 🌱 Personal</button>
+          <button type="button" class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Deliverables','🎯','#fb7185')">+ 🎯 Deliverables</button>
+        </div>
+
+        <div class="weekly-filter-controls">
+          <input type="text" class="weekly-search-input" placeholder="Search weekly items..." value="${esc(weeklySearchQuery)}" oninput="setWeeklySearch(this.value)">
+          <button type="button" class="weekly-filter-chip ${weeklyActiveFilter === 'all' ? 'active' : ''}" onclick="setWeeklyFilter('all', this)">All</button>
+          <button type="button" class="weekly-filter-chip ${weeklyActiveFilter === 'goal' ? 'active' : ''}" onclick="setWeeklyFilter('goal', this)">🎯 Goals</button>
+          <button type="button" class="weekly-filter-chip ${weeklyActiveFilter === 'task' ? 'active' : ''}" onclick="setWeeklyFilter('task', this)">• Tasks</button>
+          <button type="button" class="weekly-filter-chip ${weeklyActiveFilter === 'pending' ? 'active' : ''}" onclick="setWeeklyFilter('pending', this)">⚡ Pending</button>
+          <button type="button" class="weekly-filter-chip ${weeklyActiveFilter === 'complete' ? 'active' : ''}" onclick="setWeeklyFilter('complete', this)">✓ Done</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  html += `<div class="weekly-areas-grid">`;
+
+  if (!areas.length) {
+    html += `
+      <div class="weekly-no-areas">
+        <div style="font-size:2.4rem;margin-bottom:12px">⚡</div>
+        <h4>Create Your Custom Weekly Focus Areas</h4>
+        <p>Organize your weekly objectives and deliverables into cards like Focus, Studies, Gym, Projects, Deliverables, etc. Each area holds goals, task checklists, notes, and live progress.</p>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="openWeeklyAreaModal()">+ Create Custom Area</button>
+          <button class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Focus Targets','⚡','#a78bfa')">+ ⚡ Focus</button>
+          <button class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Studies','📚','#60a5fa')">+ 📚 Studies</button>
+          <button class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Gym & Fitness','💪','#34d399')">+ 💪 Gym</button>
+          <button class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Side Projects','💻','#fbbf24')">+ 💻 Projects</button>
+          <button class="weekly-template-btn" onclick="addWeeklyAreaTemplate('Personal','🌱','#c084fc')">+ 🌱 Personal</button>
+        </div>
+      </div>
+    `;
+  } else {
+    areas.forEach((area, areaIdx) => {
+      const areaItems = area.items || [];
+      const totalAreaItems = areaItems.length;
+      const doneAreaItems = areaItems.filter(e => e.state === 'complete' || e.done === true).length;
+      const areaPct = totalAreaItems > 0 ? Math.round((doneAreaItems / totalAreaItems) * 100) : 0;
+      const isCollapsed = !!area.collapsed;
+
+      const filteredItems = areaItems.filter(e => {
+        if (weeklySearchQuery) {
+          const q = weeklySearchQuery.toLowerCase();
+          const matchText = (e.text || '').toLowerCase().includes(q);
+          const matchSubs = (e.subtasks || []).some(st => (st.text || '').toLowerCase().includes(q));
+          if (!matchText && !matchSubs) return false;
+        }
+        if (weeklyActiveFilter === 'goal') return e.type === 'goal';
+        if (weeklyActiveFilter === 'task') return e.type === 'task';
+        if (weeklyActiveFilter === 'pending') return e.state !== 'complete' && !e.done;
+        if (weeklyActiveFilter === 'complete') return e.state === 'complete' || e.done === true;
+        return true;
+      });
+
+      html += `
+        <div class="weekly-area-card" style="--area-color:${area.color || '#a78bfa'}" id="w-area-card-${area.id}">
+          <div class="weekly-area-header">
+            <div class="weekly-area-title-group" onclick="openWeeklyAreaModal('${area.id}')" title="Click to edit area">
+              <div class="weekly-area-icon-badge">${area.icon || '⚡'}</div>
+              <div class="weekly-area-title">${esc(area.title || 'Focus Area')}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span class="weekly-area-pct-pill">${areaPct}%</span>
+              <button class="entry-action-btn" onclick="moveWeeklyArea('${area.id}', -1)" title="Move left" ${areaIdx === 0 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>←</button>
+              <button class="entry-action-btn" onclick="moveWeeklyArea('${area.id}', 1)" title="Move right" ${areaIdx === areas.length - 1 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>→</button>
+              <button class="entry-action-btn edit" onclick="openWeeklyAreaModal('${area.id}')" title="Edit area">✏️</button>
+              <button class="entry-action-btn" onclick="toggleWeeklyAreaCollapse('${area.id}')" title="${isCollapsed ? 'Expand' : 'Collapse'}">${isCollapsed ? '▼' : '▲'}</button>
+              <button class="entry-action-btn delete" onclick="delWeeklyArea('${area.id}')" title="Delete area">✕</button>
+            </div>
+          </div>
+
+          <div class="weekly-area-progress-strip">
+            <div class="weekly-area-progress-info">
+              <span><strong>${doneAreaItems}</strong> of <strong>${totalAreaItems}</strong> completed</span>
+              <span><strong>${areaPct}%</strong></span>
+            </div>
+            <div class="weekly-area-bar-track">
+              <div class="weekly-area-bar-fill" style="width:${areaPct}%"></div>
+            </div>
+          </div>
+
+          <div class="weekly-area-body" style="${isCollapsed ? 'display:none' : ''}">
+            <ul class="weekly-area-items" id="w-area-items-${area.id}">
+      `;
+
+      if (!filteredItems.length) {
+        html += `<li class="weekly-empty-items">${areaItems.length === 0 ? 'No items in this area yet. Add a goal or task below.' : 'No items match the current filter.'}</li>`;
+      } else {
+        filteredItems.forEach(e => {
+          html += rE(e, 'weekly_goal');
+        });
+      }
+
+      html += `
+            </ul>
+
+            <div class="weekly-area-notes-container">
+              <div class="weekly-area-notes-header" onclick="document.getElementById('w-notes-box-${area.id}').focus()">
+                <span>📝 Focus Notes & Scratchpad</span>
+                <span style="font-size:0.65rem;opacity:0.7">Auto-saved</span>
+              </div>
+              <textarea id="w-notes-box-${area.id}" class="weekly-area-notes-box" placeholder="Weekly targets, key deliverables, notes, or habits focus..." oninput="saveWeeklyAreaNotes('${area.id}', this.value)">${esc(area.notes || '')}</textarea>
+            </div>
+
+            <div class="weekly-area-add-form">
+              ${renderCustomTypePickerHTML('ctp-w-' + area.id, 'w-area-item-type-' + area.id, 'goal', true)}
+              <input type="text" id="w-area-item-input-${area.id}" placeholder="Add weekly goal/task... (#tags)" onkeydown="if(event.key==='Enter')addWeeklyAreaEntry('${area.id}')">
+              <button type="button" onclick="addWeeklyAreaEntry('${area.id}')">Add</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  html += `</div>`;
+  root.innerHTML = html;
+}
+
+// 3. Weekly Area CRUD & Modals
+function renderWeeklyAreaColorSwatches() {
+  const container = document.getElementById('w-area-color-swatch-grid');
+  if (!container) return;
+  container.innerHTML = WEEKLY_COLOR_PALETTE.map(c => `
+    <button type="button" class="area-swatch-btn ${c === currentWeeklyAreaColor ? 'selected' : ''}" style="background:${c}" onclick="selectWeeklyAreaColor('${c}')" aria-label="Color ${c}"></button>
+  `).join('');
+}
+
+function selectWeeklyAreaColor(color) {
+  currentWeeklyAreaColor = color;
+  renderWeeklyAreaColorSwatches();
+}
+
+function renderWeeklyAreaEmojiGrid() {
+  const container = document.getElementById('w-area-emoji-preset-grid');
+  if (!container) return;
+  container.innerHTML = WEEKLY_EMOJI_PRESETS.map(e => `
+    <button type="button" class="area-emoji-btn ${e === currentWeeklyAreaEmoji ? 'selected' : ''}" onclick="selectWeeklyAreaEmoji('${e}')">${e}</button>
+  `).join('');
+}
+
+function selectWeeklyAreaEmoji(emoji) {
+  currentWeeklyAreaEmoji = emoji;
+  const customInp = document.getElementById('w-area-custom-emoji');
+  if (customInp) customInp.value = emoji;
+  renderWeeklyAreaEmojiGrid();
+}
+
+function setWeeklyCustomAreaEmoji(val) {
+  const clean = val.trim();
+  if (clean) {
+    currentWeeklyAreaEmoji = clean;
+    renderWeeklyAreaEmojiGrid();
+  }
+}
+
+function applyWeeklyAreaPreset(title, icon, color) {
+  const titleInp = document.getElementById('w-area-title-input');
+  if (titleInp) titleInp.value = title;
+  currentWeeklyAreaEmoji = icon;
+  currentWeeklyAreaColor = color;
+  const customInp = document.getElementById('w-area-custom-emoji');
+  if (customInp) customInp.value = icon;
+  renderWeeklyAreaColorSwatches();
+  renderWeeklyAreaEmojiGrid();
+}
+
+function openWeeklyAreaModal(areaId = null) {
+  editingWeeklyAreaId = areaId;
+  const modal = document.getElementById('weekly-area-modal');
+  const titleEl = document.getElementById('w-area-modal-title');
+  const titleInp = document.getElementById('w-area-title-input');
+  const notesInp = document.getElementById('w-area-notes-input');
+  const customEmojiInp = document.getElementById('w-area-custom-emoji');
+  const saveBtn = document.getElementById('w-area-save-btn');
+
+  if (areaId) {
+    const k = wgKey();
+    const data = getWeeklyData(k);
+    const area = (data.areas || []).find(a => a.id === areaId);
+    if (area) {
+      if (titleEl) titleEl.textContent = 'Edit Weekly Area';
+      if (titleInp) titleInp.value = area.title || '';
+      if (notesInp) notesInp.value = area.notes || '';
+      currentWeeklyAreaColor = area.color || '#a78bfa';
+      currentWeeklyAreaEmoji = area.icon || '⚡';
+      if (customEmojiInp) customEmojiInp.value = currentWeeklyAreaEmoji;
+      if (saveBtn) saveBtn.textContent = 'Save Changes';
+    }
+  } else {
+    if (titleEl) titleEl.textContent = 'Create Weekly Focus Area';
+    if (titleInp) titleInp.value = '';
+    if (notesInp) notesInp.value = '';
+    currentWeeklyAreaColor = '#a78bfa';
+    currentWeeklyAreaEmoji = '⚡';
+    if (customEmojiInp) customEmojiInp.value = '⚡';
+    if (saveBtn) saveBtn.textContent = 'Create Area';
+  }
+
+  renderWeeklyAreaColorSwatches();
+  renderWeeklyAreaEmojiGrid();
+
+  if (modal) modal.classList.add('active');
+  if (titleInp) setTimeout(() => titleInp.focus(), 80);
+}
+
+function closeWeeklyAreaModal() {
+  const modal = document.getElementById('weekly-area-modal');
+  if (modal) modal.classList.remove('active');
+  editingWeeklyAreaId = null;
+}
+
+function saveWeeklyAreaModal() {
+  const titleInp = document.getElementById('w-area-title-input');
+  const notesInp = document.getElementById('w-area-notes-input');
+  const title = titleInp ? titleInp.value.trim() : '';
+
+  if (!title) {
+    alert('Please enter an area name.');
+    return;
+  }
+
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  if (!data.areas) data.areas = [];
+
+  if (editingWeeklyAreaId) {
+    const area = data.areas.find(a => a.id === editingWeeklyAreaId);
+    if (area) {
+      area.title = title;
+      area.icon = currentWeeklyAreaEmoji || '⚡';
+      area.color = currentWeeklyAreaColor || '#a78bfa';
+      if (notesInp) area.notes = notesInp.value.trim();
+    }
+  } else {
+    data.areas.push({
+      id: gid(),
+      title: title,
+      icon: currentWeeklyAreaEmoji || '⚡',
+      color: currentWeeklyAreaColor || '#a78bfa',
+      items: [],
+      notes: notesInp ? notesInp.value.trim() : '',
+      collapsed: false
+    });
+  }
+
+  save();
+  closeWeeklyAreaModal();
+  rWG();
+  showToast(editingWeeklyAreaId ? 'Area updated!' : 'Area created!');
+}
+
+function addWeeklyAreaTemplate(title, icon, color) {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  if (!data.areas) data.areas = [];
+
+  const exists = data.areas.some(a => a.title.toLowerCase() === title.toLowerCase());
+  if (exists) {
+    showToast(`"${title}" area already exists for this week.`);
+    return;
+  }
+
+  data.areas.push({
+    id: gid(),
+    title: title,
+    icon: icon,
+    color: color,
+    items: [],
+    notes: '',
+    collapsed: false
+  });
+
+  save();
+  rWG();
+  showToast(`Added ${icon} ${title} area!`);
+}
+
+function delWeeklyArea(areaId) {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  const idx = (data.areas || []).findIndex(a => a.id === areaId);
+  if (idx === -1) return;
+
+  const area = data.areas[idx];
+  const itemCount = (area.items || []).length;
+  const msg = itemCount > 0
+    ? `Delete "${area.title}" area? Its ${itemCount} items will be safely moved to the Recycle Bin.`
+    : `Delete "${area.title}" area?`;
+
+  if (!confirm(msg)) return;
+
+  if (itemCount > 0) {
+    area.items.forEach(item => {
+      moveToTrash('weekly_goal', k, item);
+    });
+  }
+
+  data.areas.splice(idx, 1);
+  save();
+  rWG();
+  showToast(`Deleted "${area.title}" area.`);
+}
+
+function moveWeeklyArea(areaId, dir) {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  const areas = data.areas || [];
+  const idx = areas.findIndex(a => a.id === areaId);
+  if (idx === -1) return;
+
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= areas.length) return;
+
+  const [moved] = areas.splice(idx, 1);
+  areas.splice(newIdx, 0, moved);
+
+  save();
+  rWG();
+}
+
+function toggleWeeklyAreaCollapse(areaId) {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  const area = (data.areas || []).find(a => a.id === areaId);
+  if (area) {
+    area.collapsed = !area.collapsed;
+    save();
+    rWG();
+  }
+}
+
+function saveWeeklyAreaNotes(areaId, text) {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  const area = (data.areas || []).find(a => a.id === areaId);
+  if (area) {
+    area.notes = text;
+    save();
+  }
+}
+
+function addWeeklyAreaEntry(areaId) {
+  const typeSel = document.getElementById(`w-area-item-type-${areaId}`);
+  const textInp = document.getElementById(`w-area-item-input-${areaId}`);
+  if (!textInp) return;
+
+  const text = textInp.value.trim();
+  if (!text) return;
+
+  const type = typeSel ? typeSel.value : 'goal';
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  const area = (data.areas || []).find(a => a.id === areaId);
+  if (!area) return;
+
+  if (!area.items) area.items = [];
+  area.items.push({
+    id: gid(),
+    type: type,
+    text: text,
+    priority: false,
+    state: (type === 'task' || type === 'goal') ? 'incomplete' : null,
+    subtasks: []
+  });
+
+  save();
+  textInp.value = '';
+  rWG();
+  showToast('Weekly item added!');
+}
+
+// 4. Item Operations
+function cycWG(id) {
+  const res = findWeeklyItemAndArea(id);
+  if (!res.item) return;
+  const e = res.item;
+  if (e.type === 'goal') {
+    e.state = e.state === 'complete' ? 'incomplete' : 'complete';
+    e.done = e.state === 'complete';
+  } else if (e.type === 'task') {
+    e.state = nxt(e.state);
+    e.done = e.state === 'complete';
+  }
+  save();
+  rWG();
+}
+
+function priWG(id) {
+  const res = findWeeklyItemAndArea(id);
+  if (!res.item) return;
+  res.item.priority = !res.item.priority;
+  save();
+  rWG();
+}
+
+function delWG(id) {
+  const k = wgKey();
+  const res = findWeeklyItemAndArea(id, k);
+  if (!res.item || !res.area) return;
+  moveToTrash('weekly_goal', k, res.item);
+  res.area.items = res.area.items.filter(x => x.id !== id);
+  save();
+  rWG();
+  showToast('Item moved to Recycle Bin.');
+}
+
+function togWG(id) {
+  cycWG(id);
+}
+
+function addWeekGoal() {
+  const k = wgKey();
+  const data = ensureWeeklyObject(k);
+  if (!data.areas || !data.areas.length) {
+    data.areas = [{
+      id: gid(),
+      title: 'Weekly Goals',
+      icon: '🎯',
+      color: '#a78bfa',
+      items: [],
+      notes: '',
+      collapsed: false
+    }];
+  }
+  const inp = document.getElementById('wg-input');
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+
+  data.areas[0].items.push({
+    id: gid(),
+    type: 'goal',
+    text: text,
+    priority: false,
+    state: 'incomplete',
+    subtasks: []
+  });
+
+  save();
+  if (inp) inp.value = '';
+  rWG();
+}
+
+function setWeeklyFilter(f, btnEl) {
+  weeklyActiveFilter = f;
+  rWG();
+}
+
+function setWeeklySearch(q) {
+  weeklySearchQuery = q;
+  rWG();
+}
+
+// ═══════════════════ MONTHLY DASHBOARD ENGINE ═══════════════════
+let monthlyActiveFilter = 'all'; // 'all' | 'goal' | 'task' | 'note' | 'pending' | 'complete'
+let monthlySearchQuery = '';
+let editingAreaId = null;
+let currentAreaColor = '#a78bfa';
+let currentAreaEmoji = '📚';
+
+const AREA_COLOR_PALETTE = ['#a78bfa', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#22d3ee', '#fb7185', '#f97316', '#14b8a6', '#818cf8', '#e2e8f0'];
+const AREA_EMOJI_PRESETS = ['📚', '💪', '💼', '🌱', '🎯', '💰', '🧘', '🎨', '🛠️', '🚀', '📖', '⚡', '🏆', '✈️', '🎵', '🔬', '💻', '🧠', '🍎', '⭐'];
+
+// 1. Data Normalization & Invariant Keepers (100% Backward Compatible)
+function getMonthlyData(k) {
+  if (!D.monthlyLogs) D.monthlyLogs = {};
+  const val = D.monthlyLogs[k];
+  if (!val) {
+    return { areas: [] };
+  }
+  if (Array.isArray(val)) {
+    if (!val.length) return { areas: [] };
+    // Backward compatibility: wrap legacy array into a default area
+    return {
+      areas: [
+        {
+          id: 'legacy_default',
+          title: 'Monthly Tasks',
+          icon: '📋',
+          color: '#a78bfa',
+          items: val,
+          notes: '',
+          collapsed: false
+        }
+      ]
+    };
+  }
+  if (typeof val === 'object' && Array.isArray(val.areas)) {
+    return val;
+  }
+  return { areas: [] };
+}
+
+function ensureMonthlyObject(k) {
+  if (!D.monthlyLogs) D.monthlyLogs = {};
+  const curr = D.monthlyLogs[k];
+  if (!curr || !Array.isArray(curr.areas)) {
+    D.monthlyLogs[k] = getMonthlyData(k);
+  }
+  return D.monthlyLogs[k];
+}
+
+function getMonthlyFlatEntries(k) {
+  const mData = getMonthlyData(k);
+  const result = [];
+  (mData.areas || []).forEach(a => {
+    if (Array.isArray(a.items)) {
+      result.push(...a.items);
+    }
+  });
+  return result;
+}
+
+function findMonthlyItemAndArea(id, monthKey = null) {
+  const k = monthKey || mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  for (const area of (mData.areas || [])) {
+    if (Array.isArray(area.items)) {
+      const idx = area.items.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        return { item: area.items[idx], itemIndex: idx, area: area, monthKey: k };
+      }
+    }
+  }
+  return { item: null, itemIndex: -1, area: null, monthKey: k };
+}
+
+// 2. Main Render Function for Monthly Log & Dashboard
+function rMon() {
+  const disp = document.getElementById('month-display');
+  if (disp) disp.textContent = fM(curMonth);
+  rCal();
+  rME();
+}
+
+function rCal() {
+  const y = curMonth.getFullYear(), m = curMonth.getMonth(), fd = new Date(y, m, 1).getDay(), td = dim(y, m), tk = dk(new Date());
+  let h = '';
+  const pd = dim(y, m - 1);
+  for (let i = fd - 1; i >= 0; i--) h += `<div class="calendar-day other-month"><div class="day-number">${pd - i}</div></div>`;
+  for (let d = 1; d <= td; d++) {
+    const dkey = dk(new Date(y, m, d)), isT = dkey === tk, en = D.dailyLogs[dkey] || [];
+    const dots = en.slice(0, 5).map(e => `<div class="day-dot ${e.type}"></div>`).join('');
+    h += `<div class="calendar-day${isT ? ' today' : ''}" onclick="openDM('${dkey}')"><div class="day-number">${d}</div><div class="day-dots">${dots}</div></div>`;
+  }
+  const tc = fd + td, r = (7 - (tc % 7)) % 7;
+  for (let d = 1; d <= r; d++) h += `<div class="calendar-day other-month"><div class="day-number">${d}</div></div>`;
+  const cb = document.getElementById('cal-body');
+  if (cb) cb.innerHTML = h;
+}
+
+function chMon(o) {
+  curMonth.setMonth(curMonth.getMonth() + o);
+  rMon();
+}
+
+function goMon() {
+  curMonth = new Date();
+  rMon();
+}
+
+// 3. Render Monthly Dashboard (Summary, Stats, Filter, Area Cards, Notes, Progress)
+function rME() {
+  const root = document.getElementById('monthly-dashboard-root');
+  if (!root) return;
+
+  const k = mkk(curMonth);
+  const mData = getMonthlyData(k);
+  const areas = mData.areas || [];
+
+  // Calculate high level stats
+  let totalItems = 0;
+  let totalDone = 0;
+  let totalGoals = 0;
+  let totalGoalsDone = 0;
+  let totalTasks = 0;
+  let totalTasksDone = 0;
+
+  areas.forEach(a => {
+    (a.items || []).forEach(e => {
+      totalItems++;
+      const isDone = e.state === 'complete';
+      if (isDone) totalDone++;
+      if (e.type === 'goal') {
+        totalGoals++;
+        if (isDone) totalGoalsDone++;
+      } else if (e.type === 'task') {
+        totalTasks++;
+        if (isDone) totalTasksDone++;
+      }
+    });
+  });
+
+  const overallPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
+
+  // Build Overview Summary Card
+  let out = `
+  <div class="monthly-overview-card">
+    <div class="monthly-overview-top">
+      <div class="monthly-overview-title-group">
+        <h3>🎯 ${fM(curMonth)} Focus & Goals</h3>
+      </div>
+      <div class="monthly-stats-strip">
+        <div class="monthly-stat-pill highlight">
+          <span>Overall:</span> <strong>${overallPct}%</strong>
+        </div>
+        <div class="monthly-stat-pill">
+          <span>Areas:</span> <strong>${areas.length}</strong>
+        </div>
+        <div class="monthly-stat-pill">
+          <span>Goals:</span> <strong>${totalGoalsDone}/${totalGoals}</strong>
+        </div>
+        <div class="monthly-stat-pill">
+          <span>Tasks:</span> <strong>${totalTasksDone}/${totalTasks}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Track -->
+    <div class="monthly-progress-track">
+      <div class="monthly-progress-fill" style="width:${overallPct}%"></div>
+    </div>
+
+    <!-- Toolbar: Quick Templates & Filter -->
+    <div class="monthly-toolbar">
+      <div class="monthly-template-pills">
+        <span class="monthly-template-label">Quick Add:</span>
+        <button class="monthly-template-btn" onclick="addAreaTemplate('Studies','📚','#a78bfa')">📚 Studies</button>
+        <button class="monthly-template-btn" onclick="addAreaTemplate('Gym & Fitness','💪','#34d399')">💪 Gym</button>
+        <button class="monthly-template-btn" onclick="addAreaTemplate('Projects','💻','#60a5fa')">💻 Projects</button>
+        <button class="monthly-template-btn" onclick="addAreaTemplate('Personal','🌱','#fbbf24')">🌱 Personal</button>
+        <button class="monthly-template-btn" onclick="addAreaTemplate('Finances','💰','#14b8a6')">💰 Finances</button>
+      </div>
+
+      <div class="monthly-filter-controls">
+        <input type="text" class="monthly-search-input" placeholder="🔍 Search dashboard..." value="${esc(monthlySearchQuery)}" oninput="setMonthlySearch(this.value)">
+        <button class="monthly-filter-chip ${monthlyActiveFilter === 'all' ? 'active' : ''}" onclick="setMonthlyFilter('all')">All</button>
+        <button class="monthly-filter-chip ${monthlyActiveFilter === 'goal' ? 'active' : ''}" onclick="setMonthlyFilter('goal')">🎯 Goals</button>
+        <button class="monthly-filter-chip ${monthlyActiveFilter === 'task' ? 'active' : ''}" onclick="setMonthlyFilter('task')">• Tasks</button>
+        <button class="monthly-filter-chip ${monthlyActiveFilter === 'pending' ? 'active' : ''}" onclick="setMonthlyFilter('pending')">⚡ Pending</button>
+        <button class="monthly-filter-chip ${monthlyActiveFilter === 'complete' ? 'active' : ''}" onclick="setMonthlyFilter('complete')">✓ Done</button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  // Areas Grid
+  out += `<div class="monthly-areas-grid">`;
+
+  if (areas.length === 0) {
+    out += `
+      <div class="monthly-no-areas">
+        <div style="font-size:2.5rem;margin-bottom:10px">🌟</div>
+        <h4>Create Your Custom Monthly Focus Areas</h4>
+        <p>Organize your monthly roadmaps into dedicated cards like Studies, Gym, Projects, Personal, etc. Each area holds goals, task checklists, notes, and live progress.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="openAreaModal()">+ Create Custom Area</button>
+          <button class="btn btn-ghost" onclick="addAreaTemplate('Studies','📚','#a78bfa')">+ 📚 Studies</button>
+          <button class="btn btn-ghost" onclick="addAreaTemplate('Gym & Fitness','💪','#34d399')">+ 💪 Gym</button>
+          <button class="btn btn-ghost" onclick="addAreaTemplate('Projects','💻','#60a5fa')">+ 💻 Projects</button>
+          <button class="btn btn-ghost" onclick="addAreaTemplate('Personal','🌱','#fbbf24')">+ 🌱 Personal</button>
+        </div>
+      </div>
+    `;
+  } else {
+    areas.forEach((area, areaIdx) => {
+      const items = area.items || [];
+      const totalAreaItems = items.length;
+      const doneAreaItems = items.filter(e => e.state === 'complete').length;
+      const areaPct = totalAreaItems > 0 ? Math.round((doneAreaItems / totalAreaItems) * 100) : 0;
+      const color = area.color || '#a78bfa';
+      const icon = area.icon || '📌';
+      const isCollapsed = !!area.collapsed;
+
+      // Filter area items based on active filters
+      let displayItems = items;
+      if (monthlyActiveFilter === 'goal') {
+        displayItems = displayItems.filter(e => e.type === 'goal');
+      } else if (monthlyActiveFilter === 'task') {
+        displayItems = displayItems.filter(e => e.type === 'task');
+      } else if (monthlyActiveFilter === 'pending') {
+        displayItems = displayItems.filter(e => e.state !== 'complete' && e.state !== 'irrelevant');
+      } else if (monthlyActiveFilter === 'complete') {
+        displayItems = displayItems.filter(e => e.state === 'complete');
+      }
+
+      if (monthlySearchQuery.trim()) {
+        const sq = monthlySearchQuery.toLowerCase();
+        displayItems = displayItems.filter(e => (e.text || '').toLowerCase().includes(sq));
+      }
+
+      out += `
+      <div class="monthly-area-card" style="--area-color:${color}">
+        <!-- Header -->
+        <div class="monthly-area-header">
+          <div class="monthly-area-title-group" onclick="openAreaModal('${area.id}')" title="Click to customize this area">
+            <div class="monthly-area-icon-badge">${icon}</div>
+            <div class="monthly-area-title">${esc(area.title)}</div>
+          </div>
+          <div class="monthly-area-pct-pill" style="color:${color}">${areaPct}%</div>
+          <div class="monthly-area-actions">
+            <button class="area-btn" onclick="moveMonthlyArea('${area.id}', -1)" title="Move Left" ${areaIdx === 0 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>←</button>
+            <button class="area-btn" onclick="moveMonthlyArea('${area.id}', 1)" title="Move Right" ${areaIdx === areas.length - 1 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>→</button>
+            <button class="area-btn" onclick="openAreaModal('${area.id}')" title="Edit Area (Name, Icon, Color)">✏️</button>
+            <button class="area-btn" onclick="toggleAreaCollapse('${area.id}')" title="${isCollapsed ? 'Expand' : 'Collapse'}">${isCollapsed ? '▾' : '▴'}</button>
+            <button class="area-btn danger" onclick="delMonthlyArea('${area.id}')" title="Delete Area">✕</button>
+          </div>
+        </div>
+
+        <!-- Progress Strip -->
+        <div class="monthly-area-progress-strip">
+          <div class="monthly-area-progress-info">
+            <span><strong>${doneAreaItems}</strong> of ${totalAreaItems} completed</span>
+            <span>${areaPct}%</span>
+          </div>
+          <div class="monthly-area-bar-track">
+            <div class="monthly-area-bar-fill" style="width:${areaPct}%;background:${areaPct >= 100 ? 'var(--green)' : color}"></div>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        ${!isCollapsed ? `
+        <div class="monthly-area-body">
+          <!-- Items List -->
+          <ul class="monthly-area-items">
+            ${displayItems.length ? displayItems.map(e => rE(e, 'monthly')).join('') : `
+              <div class="monthly-empty-items">
+                ${monthlySearchQuery || monthlyActiveFilter !== 'all' ? 'No matching items in this area' : 'No items yet. Add a goal or task below!'}
+              </div>
+            `}
+          </ul>
+
+          <!-- In-Card Notes Scratchpad -->
+          <div class="monthly-area-notes-container">
+            <div class="monthly-area-notes-header" onclick="toggleAreaNotesSection('${area.id}')">
+              <span>📝 Area Notes & Objectives</span>
+              <span id="notes-chevron-${area.id}">▾</span>
+            </div>
+            <textarea
+              class="monthly-area-notes-box"
+              id="area-notes-${area.id}"
+              placeholder="Add key objectives, resources, routines, or thoughts for ${esc(area.title)}..."
+              oninput="saveAreaNotes('${area.id}', this.value)"
+            >${esc(area.notes || '')}</textarea>
+          </div>
+
+          <!-- Quick Add Row -->
+          <div class="monthly-area-add-form">
+            ${renderCustomTypePickerHTML('ctp-m-' + area.id, 'matype-' + area.id, 'task', true)}
+            <input
+              type="text"
+              id="mainp-${area.id}"
+              placeholder="Add to ${esc(area.title)}..."
+              onkeydown="if(event.key==='Enter')addAreaEntry('${area.id}')"
+            >
+            <button onclick="addAreaEntry('${area.id}')">Add</button>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+      `;
+    });
+  }
+
+  out += `</div>`;
+  root.innerHTML = out;
+}
+
+// 4. Area Operations (Add, Edit, Reorder, Delete, Notes, Filtering)
+function openAreaModal(areaId = null) {
+  editingAreaId = areaId;
+  const modal = document.getElementById('monthly-area-modal');
+  const titleEl = document.getElementById('area-modal-title');
+  const nameInput = document.getElementById('area-title-input');
+  const emojiInput = document.getElementById('area-custom-emoji');
+  const notesInput = document.getElementById('area-notes-input');
+  const saveBtn = document.getElementById('area-save-btn');
+
+  if (areaId) {
+    const k = mkk(curMonth);
+    const mData = getMonthlyData(k);
+    const area = (mData.areas || []).find(a => a.id === areaId);
+    if (area) {
+      if (titleEl) titleEl.textContent = 'Customize Goal Area';
+      if (nameInput) nameInput.value = area.title || '';
+      currentAreaEmoji = area.icon || '📚';
+      currentAreaColor = area.color || '#a78bfa';
+      if (emojiInput) emojiInput.value = currentAreaEmoji;
+      if (notesInput) notesInput.value = area.notes || '';
+      if (saveBtn) saveBtn.textContent = 'Save Changes';
+    }
+  } else {
+    if (titleEl) titleEl.textContent = 'Create Goal Area';
+    if (nameInput) nameInput.value = '';
+    currentAreaEmoji = '📚';
+    currentAreaColor = AREA_COLOR_PALETTE[0];
+    if (emojiInput) emojiInput.value = currentAreaEmoji;
+    if (notesInput) notesInput.value = '';
+    if (saveBtn) saveBtn.textContent = 'Create Area';
+  }
+
+  renderAreaColorSwatches();
+  renderAreaEmojiGrid();
+
+  if (modal) modal.classList.add('active');
+  if (nameInput) setTimeout(() => nameInput.focus(), 60);
+}
+
+function closeAreaModal() {
+  const modal = document.getElementById('monthly-area-modal');
+  if (modal) modal.classList.remove('active');
+  editingAreaId = null;
+}
+
+function renderAreaColorSwatches() {
+  const container = document.getElementById('area-color-swatch-grid');
+  if (!container) return;
+  container.innerHTML = AREA_COLOR_PALETTE.map(col => `
+    <div
+      class="area-color-swatch ${col.toLowerCase() === currentAreaColor.toLowerCase() ? 'selected' : ''}"
+      style="background:${col}"
+      onclick="selectAreaColor('${col}')"
+      title="${col}"
+    ></div>
+  `).join('');
+}
+
+function selectAreaColor(color) {
+  currentAreaColor = color;
+  renderAreaColorSwatches();
+}
+
+function renderAreaEmojiGrid() {
+  const container = document.getElementById('area-emoji-preset-grid');
+  if (!container) return;
+  container.innerHTML = AREA_EMOJI_PRESETS.map(em => `
+    <button
+      type="button"
+      class="area-emoji-btn ${em === currentAreaEmoji ? 'selected' : ''}"
+      onclick="selectAreaEmoji('${em}')"
+    >${em}</button>
+  `).join('');
+}
+
+function selectAreaEmoji(emoji) {
+  currentAreaEmoji = emoji;
+  const input = document.getElementById('area-custom-emoji');
+  if (input) input.value = emoji;
+  renderAreaEmojiGrid();
+}
+
+function setCustomAreaEmoji(emoji) {
+  currentAreaEmoji = emoji || '📚';
+  renderAreaEmojiGrid();
+}
+
+function applyAreaPreset(title, icon, color) {
+  const nameInput = document.getElementById('area-title-input');
+  if (nameInput) nameInput.value = title;
+  currentAreaEmoji = icon;
+  currentAreaColor = color;
+  const emojiInput = document.getElementById('area-custom-emoji');
+  if (emojiInput) emojiInput.value = icon;
+  renderAreaColorSwatches();
+  renderAreaEmojiGrid();
+}
+
+function saveAreaModal() {
+  const nameInput = document.getElementById('area-title-input');
+  const title = nameInput ? nameInput.value.trim() : '';
+  if (!title) {
+    alert('Please enter an area name.');
+    if (nameInput) nameInput.focus();
+    return;
+  }
+
+  const notesInput = document.getElementById('area-notes-input');
+  const notes = notesInput ? notesInput.value.trim() : '';
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  if (!mData.areas) mData.areas = [];
+
+  if (editingAreaId) {
+    const area = mData.areas.find(a => a.id === editingAreaId);
+    if (area) {
+      area.title = title;
+      area.icon = currentAreaEmoji;
+      area.color = currentAreaColor;
+      if (notes) area.notes = notes;
+    }
+    showToast('Area updated successfully!');
+  } else {
+    mData.areas.push({
+      id: gid(),
+      title: title,
+      icon: currentAreaEmoji,
+      color: currentAreaColor,
+      items: [],
+      notes: notes,
+      collapsed: false
+    });
+    showToast(`✅ "${title}" area created!`);
+  }
+
+  save();
+  closeAreaModal();
+  rME();
+}
+
+function addAreaTemplate(title, icon, color) {
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  if (!mData.areas) mData.areas = [];
+  
+  // Check if an area with this title already exists
+  const existing = mData.areas.find(a => a.title.toLowerCase() === title.toLowerCase());
+  if (existing) {
+    showToast(`Area "${title}" already exists!`);
+    return;
+  }
+
+  mData.areas.push({
+    id: gid(),
+    title: title,
+    icon: icon,
+    color: color,
+    items: [],
+    notes: '',
+    collapsed: false
+  });
+
+  save();
+  rME();
+  showToast(`✅ "${title}" area added!`);
+}
+
+function delMonthlyArea(areaId) {
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  const area = (mData.areas || []).find(a => a.id === areaId);
+  if (!area) return;
+
+  if (!confirm(`Are you sure you want to delete "${area.title}" and all its tasks/goals?`)) return;
+
+  // Move items to trash for safe recovery
+  if (area.items && area.items.length) {
+    area.items.forEach(item => {
+      moveToTrash('monthly', k, item);
+    });
+  }
+
+  mData.areas = mData.areas.filter(a => a.id !== areaId);
+  save();
+  rME();
+  showToast(`🗑️ "${area.title}" deleted.`);
+}
+
+function moveMonthlyArea(areaId, dir) {
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  const areas = mData.areas || [];
+  const idx = areas.findIndex(a => a.id === areaId);
+  if (idx === -1) return;
+  const targetIdx = idx + dir;
+  if (targetIdx < 0 || targetIdx >= areas.length) return;
+
+  const temp = areas[idx];
+  areas[idx] = areas[targetIdx];
+  areas[targetIdx] = temp;
+
+  save();
+  rME();
+}
+
+function toggleAreaCollapse(areaId) {
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  const area = (mData.areas || []).find(a => a.id === areaId);
+  if (area) {
+    area.collapsed = !area.collapsed;
+    save();
+    rME();
+  }
+}
+
+function toggleAreaNotesSection(areaId) {
+  const box = document.getElementById(`area-notes-${areaId}`);
+  const chev = document.getElementById(`notes-chevron-${areaId}`);
+  if (box) {
+    const isHidden = box.style.display === 'none';
+    box.style.display = isHidden ? 'block' : 'none';
+    if (chev) chev.textContent = isHidden ? '▾' : '▸';
+  }
+}
+
+function saveAreaNotes(areaId, text) {
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  const area = (mData.areas || []).find(a => a.id === areaId);
+  if (area) {
+    area.notes = text;
+    save();
+  }
+}
+
+function addAreaEntry(areaId) {
+  const typeSelect = document.getElementById(`matype-${areaId}`);
+  const textInput = document.getElementById(`mainp-${areaId}`);
+  if (!textInput) return;
+  const text = textInput.value.trim();
+  if (!text) return;
+  const type = typeSelect ? typeSelect.value : 'task';
+
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  const area = (mData.areas || []).find(a => a.id === areaId);
+  if (!area) return;
+
+  if (!area.items) area.items = [];
+  area.items.push({
+    id: gid(),
+    type: type,
+    text: text,
+    priority: false,
+    state: (type === 'task' || type === 'goal') ? 'incomplete' : null,
+    subtasks: []
+  });
+
+  save();
+  textInput.value = '';
+  rME();
+}
+
+// Backward Compatibility addME
+function addME() {
+  const tEl = document.getElementById('m-type');
+  const xEl = document.getElementById('m-text');
+  const t = tEl ? tEl.value : 'task';
+  const x = xEl ? xEl.value.trim() : '';
+  if (!x) return;
+
+  const k = mkk(curMonth);
+  const mData = ensureMonthlyObject(k);
+  if (!mData.areas || !mData.areas.length) {
+    mData.areas = [{
+      id: gid(),
+      title: 'Monthly Tasks',
+      icon: '📋',
+      color: '#a78bfa',
+      items: [],
+      notes: '',
+      collapsed: false
+    }];
+  }
+
+  mData.areas[0].items.push({
+    id: gid(),
+    type: t,
+    text: x,
+    priority: false,
+    state: (t === 'task' || t === 'goal') ? 'incomplete' : null,
+    subtasks: []
+  });
+
+  save();
+  if (xEl) xEl.value = '';
+  rME();
+}
+
+function cycM(id) {
+  const { item } = findMonthlyItemAndArea(id);
+  if (!item || (item.type !== 'task' && item.type !== 'goal')) return;
+  item.state = nxt(item.state);
+  save();
+  rME();
+}
+
+function priME(id) {
+  const { item } = findMonthlyItemAndArea(id);
+  if (item) {
+    item.priority = !item.priority;
+    save();
+    rME();
+  }
+}
+
+function delME(id) {
+  const k = mkk(curMonth);
+  const { item, itemIndex, area } = findMonthlyItemAndArea(id, k);
+  if (item && area) {
+    moveToTrash('monthly', k, item);
+    area.items.splice(itemIndex, 1);
+    save();
+    rME();
+  }
+}
+
+function setMonthlyFilter(f) {
+  monthlyActiveFilter = f;
+  rME();
+}
+
+function setMonthlySearch(q) {
+  monthlySearchQuery = q;
+  rME();
+}
+
 
 // DAY MODAL
 function openDM(k){modalDt=k;document.getElementById('dm-title').textContent=fD(new Date(k+'T00:00:00'));document.getElementById('dm-input').value='';rDME();document.getElementById('day-modal').classList.add('active')}
@@ -5010,7 +7286,7 @@ function createPJ(){const name=document.getElementById('pj-name').value.trim();i
 function delPJ(i){if(!confirm('Delete?'))return;D.projects.splice(i,1);save();rPJ()}
 function openPJ(i){activeProj=i;rPJ()}
 function closePJD(){activeProj=null;rPJ()}
-function rPJD(){if(activeProj===null)return;const p=D.projects[activeProj];if(!p)return;const tasks=p.tasks||[];const total=tasks.length;const done=tasks.filter(t=>t.state==='complete').length;const pct=total>0?Math.round((done/total)*100):0;const color=p.color||PCOL[0];let h=`<div class="project-detail-header"><h3><span class="project-color-dot" style="background:${color}"></span>${esc(p.name)}</h3><select onchange="D.projects[${activeProj}].status=this.value;save();rPJD()" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.72rem;background:var(--bg-card-solid);color:var(--text-primary)"><option value="active" ${p.status==='active'?'selected':''}>Active</option><option value="on-hold" ${p.status==='on-hold'?'selected':''}>On Hold</option><option value="completed" ${p.status==='completed'?'selected':''}>Completed</option></select></div>`;h+=`<div class="project-detail-stats"><div class="project-detail-stat"><strong style="color:${color}">${pct}%</strong><span>Progress</span></div><div class="project-detail-stat"><strong style="color:var(--green)">${done}</strong><span>Done</span></div><div class="project-detail-stat"><strong style="color:var(--orange)">${total-done}</strong><span>Left</span></div></div>`;h+=`<div class="project-progress-bar" style="height:5px;margin-bottom:16px"><div class="project-progress-fill" style="width:${pct}%;background:${pct>=100?'var(--green)':color}"></div></div>`;h+=`<div class="add-entry-form" style="margin-bottom:14px"><select class="entry-type-select" id="pt-type"><option value="task">• Task</option><option value="event">○ Event</option><option value="note">— Note</option></select><input type="text" class="entry-input" id="pt-text" placeholder="Add task..." onkeydown="if(event.key==='Enter')addPJT()"><button class="btn btn-primary" onclick="addPJT()">Add</button></div>`;if(!tasks.length)h+='<div class="empty-state" style="padding:20px"><p>No tasks</p></div>';else h+=`<ul class="entries-list">${tasks.map(e=>rE(e,'project')).join('')}</ul>`;document.getElementById('pj-detail-c').innerHTML=h}
+function rPJD(){if(activeProj===null)return;const p=D.projects[activeProj];if(!p)return;const tasks=p.tasks||[];const total=tasks.length;const done=tasks.filter(t=>t.state==='complete').length;const pct=total>0?Math.round((done/total)*100):0;const color=p.color||PCOL[0];let h=`<div class="project-detail-header"><h3><span class="project-color-dot" style="background:${color}"></span>${esc(p.name)}</h3><select onchange="D.projects[${activeProj}].status=this.value;save();rPJD()" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.72rem;background:var(--bg-card-solid);color:var(--text-primary)"><option value="active" ${p.status==='active'?'selected':''}>Active</option><option value="on-hold" ${p.status==='on-hold'?'selected':''}>On Hold</option><option value="completed" ${p.status==='completed'?'selected':''}>Completed</option></select></div>`;h+=`<div class="project-detail-stats"><div class="project-detail-stat"><strong style="color:${color}">${pct}%</strong><span>Progress</span></div><div class="project-detail-stat"><strong style="color:var(--green)">${done}</strong><span>Done</span></div><div class="project-detail-stat"><strong style="color:var(--orange)">${total-done}</strong><span>Left</span></div></div>`;h+=`<div class="project-progress-bar" style="height:5px;margin-bottom:16px"><div class="project-progress-fill" style="width:${pct}%;background:${pct>=100?'var(--green)':color}"></div></div>`;h+=`<div class="add-entry-form" style="margin-bottom:14px">${renderCustomTypePickerHTML('ctp-pt','pt-type','task',false)}<input type="text" class="entry-input" id="pt-text" placeholder="Add task..." onkeydown="if(event.key==='Enter')addPJT()"><button class="btn btn-primary" onclick="addPJT()">Add</button></div>`;if(!tasks.length)h+='<div class="empty-state" style="padding:20px"><p>No tasks</p></div>';else h+=`<ul class="entries-list">${tasks.map(e=>rE(e,'project')).join('')}</ul>`;document.getElementById('pj-detail-c').innerHTML=h}
 function addPJT(){if(activeProj===null)return;const t=document.getElementById('pt-type').value,x=document.getElementById('pt-text').value.trim();if(!x)return;D.projects[activeProj].tasks.push({id:gid(),type:t,text:x,priority:false,state:t==='task'?'incomplete':null,subtasks:[]});save();document.getElementById('pt-text').value='';rPJD()}
 function cycPJ(id){if(activeProj===null)return;const e=D.projects[activeProj].tasks.find(x=>x.id===id);if(!e||e.type!=='task')return;e.state=nxt(e.state);save();rPJD()}
 function priPJ(id){if(activeProj===null)return;const e=D.projects[activeProj].tasks.find(x=>x.id===id);if(e){e.priority=!e.priority;save();rPJD()}}
@@ -6227,15 +8503,25 @@ function openEditEntryModal(ctx, id, key = null) {
     entry = (D.dailyLogs[dk(curDay)] || []).find(x => x.id === id);
   } else if (ctx === 'weekly') {
     entry = (D.dailyLogs[key] || []).find(x => x.id === id);
+  } else if (ctx === 'weekly_goal') {
+    entry = getWeeklyFlatEntries(key || wgKey()).find(x => x.id === id);
   } else if (ctx === 'monthly') {
-    entry = (D.monthlyLogs[mkk(curMonth)] || []).find(x => x.id === id);
+    entry = getMonthlyFlatEntries(mkk(curMonth)).find(x => x.id === id);
   } else if (ctx === 'modal') {
     entry = (D.dailyLogs[modalDt] || []).find(x => x.id === id);
   } else if (ctx === 'project') {
     if (activeProj !== null) entry = D.projects[activeProj].tasks.find(x => x.id === id);
   }
   if (!entry) return;
-  document.getElementById('edit-entry-type').value = entry.type;
+  const typeMap = {
+    task: { badge: '•', label: 'Task' },
+    goal: { badge: '🎯', label: 'Goal' },
+    event: { badge: '○', label: 'Event' },
+    note: { badge: '—', label: 'Note' }
+  };
+  const tInfo = typeMap[entry.type] || typeMap.task;
+  selectCustomType('ctp-edit-entry', 'edit-entry-type', entry.type, tInfo.badge, tInfo.label);
+
   document.getElementById('edit-entry-text').value = entry.text;
   document.getElementById('edit-entry-priority').checked = !!entry.priority;
   document.getElementById('edit-entry-modal').classList.add('active');
@@ -6260,8 +8546,11 @@ function saveEditedEntry() {
   } else if (editEntryCtx === 'weekly') {
     entry = (D.dailyLogs[editEntryKey] || []).find(x => x.id === editEntryId);
     reRenderFn = rW;
+  } else if (editEntryCtx === 'weekly_goal') {
+    entry = getWeeklyFlatEntries(editEntryKey || wgKey()).find(x => x.id === editEntryId);
+    reRenderFn = rWG;
   } else if (editEntryCtx === 'monthly') {
-    entry = (D.monthlyLogs[mkk(curMonth)] || []).find(x => x.id === editEntryId);
+    entry = getMonthlyFlatEntries(mkk(curMonth)).find(x => x.id === editEntryId);
     reRenderFn = rME;
   } else if (editEntryCtx === 'modal') {
     entry = (D.dailyLogs[modalDt] || []).find(x => x.id === editEntryId);
@@ -6277,7 +8566,7 @@ function saveEditedEntry() {
     entry.type = newType;
     entry.text = newText;
     entry.priority = newPriority;
-    entry.state = newType === 'task' ? (entry.state || 'incomplete') : null;
+    entry.state = (newType === 'task' || newType === 'goal') ? (entry.state || 'incomplete') : null;
     save();
     if (reRenderFn) reRenderFn();
     showToast('Entry updated successfully!');
@@ -6322,6 +8611,8 @@ function rTrash() {
     const src = item.originalSource;
     if (src.type === 'daily') {
       sourceLabel = `Daily Log (${src.key})`;
+    } else if (src.type === 'weekly_goal' || src.type === 'weekly') {
+      sourceLabel = `Weekly Log (${src.key})`;
     } else if (src.type === 'monthly') {
       sourceLabel = `Monthly Log (${src.key})`;
     } else if (src.type === 'future') {
@@ -6358,9 +8649,34 @@ function restoreTrash(trashId) {
   if (type === 'daily') {
     if (!D.dailyLogs[key]) D.dailyLogs[key] = [];
     D.dailyLogs[key].push(entry);
+  } else if (type === 'weekly_goal' || type === 'weekly') {
+    const wData = ensureWeeklyObject(key);
+    if (!wData.areas || !wData.areas.length) {
+      wData.areas = [{
+        id: gid(),
+        title: 'Weekly Goals',
+        icon: '🎯',
+        color: '#a78bfa',
+        items: [],
+        notes: '',
+        collapsed: false
+      }];
+    }
+    wData.areas[0].items.push(entry);
   } else if (type === 'monthly') {
-    if (!D.monthlyLogs[key]) D.monthlyLogs[key] = [];
-    D.monthlyLogs[key].push(entry);
+    const mData = ensureMonthlyObject(key);
+    if (!mData.areas || !mData.areas.length) {
+      mData.areas = [{
+        id: gid(),
+        title: 'Monthly Tasks',
+        icon: '📋',
+        color: '#a78bfa',
+        items: [],
+        notes: '',
+        collapsed: false
+      }];
+    }
+    mData.areas[0].items.push(entry);
   } else if (type === 'future') {
     if (!D.futureLog[key]) D.futureLog[key] = [];
     D.futureLog[key].push(entry);
@@ -6555,8 +8871,8 @@ function handleCmdSearch(query) {
   const defaultActions = [
     { type: 'nav', title: 'Home Dashboard', subtitle: 'Overview of today\'s focus, habits & quick links', icon: '🏠', action: () => showPage('index') },
     { type: 'nav', title: 'Daily Log', subtitle: 'Rapid daily logging & task checklist', icon: '📝', action: () => showPage('daily') },
-    { type: 'nav', title: 'Weekly Log', subtitle: '7-day overview & weekly goals', icon: '📆', action: () => showPage('weekly') },
-    { type: 'nav', title: 'Monthly Log', subtitle: 'Monthly calendar spread & tasks', icon: '📅', action: () => showPage('monthly') },
+    { type: 'nav', title: 'Weekly Dashboard', subtitle: '7-day overview, focus areas, weekly goals & notes', icon: '📆', action: () => showPage('weekly') },
+    { type: 'nav', title: 'Monthly Dashboard', subtitle: 'Monthly calendar, goal areas, checklists & notes', icon: '📅', action: () => showPage('monthly') },
     { type: 'nav', title: 'Future Log', subtitle: 'Long-term planning months ahead', icon: '🔮', action: () => showPage('future') },
     { type: 'nav', title: 'Habit Tracker', subtitle: 'Habit streaks & consistency matrix', icon: '✅', action: () => showPage('habits') },
     { type: 'nav', title: 'Projects', subtitle: 'Active project workflows & progress', icon: '🎯', action: () => showPage('projects') },
@@ -6759,31 +9075,74 @@ function exportMarkdown(){
   
   const wkeys=Object.keys(D.weeklyGoals || {}).sort().reverse();
   if(wkeys.length){
-    md+='## 📆 Weekly Goals\n\n';
+    md+='## 📆 Weekly Logs & Focus Areas\n\n';
     wkeys.forEach(k=>{
-      const goals=D.weeklyGoals[k];
-      if(goals&&goals.length){
+      const wData=getWeeklyData(k);
+      const areas=wData.areas || [];
+      if(areas.length){
         md+='### Week of '+k+'\n\n';
-        goals.forEach(g=>{
-          md+='- '+(g.done?'[x]':'[ ]')+' '+g.text+'\n';
+        areas.forEach(area=>{
+          const items=area.items || [];
+          const total=items.length;
+          const done=items.filter(e=>e.state==='complete'||e.done===true).length;
+          const pct=total>0?Math.round((done/total)*100):0;
+          md+='#### '+(area.icon?area.icon+' ':'')+area.title+' ('+pct+'% complete)\n\n';
+          if(area.notes&&area.notes.trim()){
+            md+='> 📝 '+area.notes.trim().replace(/\n/g,'\n> ')+'\n\n';
+          }
+          if(items.length){
+            items.forEach(e=>{
+              const isDone=e.state==='complete'||e.done===true;
+              const check=(e.type==='task'||e.type==='goal')?(isDone?'[x] ':'[ ] '):'';
+              const s=e.type==='goal'?'🎯 ':e.type==='event'?'○ ':e.type==='note'?'— ':'• ';
+              const pri=e.priority?'★ ':'';
+              md+='- '+check+s+pri+e.text+'\n';
+              if(e.subtasks&&e.subtasks.length){
+                e.subtasks.forEach(st=>{
+                  md+='  - ['+(st.state==='complete'?'x':' ')+'] '+st.text+'\n';
+                });
+              }
+            });
+            md+='\n';
+          }
         });
-        md+='\n';
       }
     });
   }
   
   const mkeys=Object.keys(D.monthlyLogs || {}).sort().reverse();
   if(mkeys.length){
-    md+='## 📅 Monthly Logs\n\n';
+    md+='## 📅 Monthly Logs & Focus Areas\n\n';
     mkeys.forEach(k=>{
-      const entries=D.monthlyLogs[k];
-      if(entries&&entries.length){
+      const mData=getMonthlyData(k);
+      const areas=mData.areas || [];
+      if(areas.length){
         md+='### '+k+'\n\n';
-        entries.forEach(e=>{
-          const s=e.type==='event'?'○':e.type==='note'?'—':'•';
-          md+='- '+s+' '+e.text+'\n';
+        areas.forEach(area=>{
+          const items=area.items || [];
+          const total=items.length;
+          const done=items.filter(e=>e.state==='complete').length;
+          const pct=total>0?Math.round((done/total)*100):0;
+          md+='#### '+(area.icon?area.icon+' ':'')+area.title+' ('+pct+'% complete)\n\n';
+          if(area.notes&&area.notes.trim()){
+            md+='> 📝 '+area.notes.trim().replace(/\n/g,'\n> ')+'\n\n';
+          }
+          if(items.length){
+            items.forEach(e=>{
+              const isDone=e.state==='complete';
+              const check=(e.type==='task'||e.type==='goal')?(isDone?'[x] ':'[ ] '):'';
+              const s=e.type==='goal'?'🎯 ':e.type==='event'?'○ ':e.type==='note'?'— ':'• ';
+              const pri=e.priority?'★ ':'';
+              md+='- '+check+s+pri+e.text+'\n';
+              if(e.subtasks&&e.subtasks.length){
+                e.subtasks.forEach(st=>{
+                  md+='  - ['+(st.state==='complete'?'x':' ')+'] '+st.text+'\n';
+                });
+              }
+            });
+            md+='\n';
+          }
         });
-        md+='\n';
       }
     });
   }
@@ -6903,7 +9262,18 @@ function renderDataStats(){
   if(!el)return;
   let totalEntries=0;
   Object.values(D.dailyLogs).forEach(v=>{if(Array.isArray(v))totalEntries+=v.length});
-  Object.values(D.monthlyLogs).forEach(v=>{if(Array.isArray(v))totalEntries+=v.length});
+  Object.values(D.weeklyGoals || {}).forEach(v=>{
+    if(Array.isArray(v))totalEntries+=v.length;
+    else if(v&&Array.isArray(v.areas)){
+      v.areas.forEach(a=>{if(Array.isArray(a.items))totalEntries+=a.items.length;});
+    }
+  });
+  Object.values(D.monthlyLogs || {}).forEach(v=>{
+    if(Array.isArray(v))totalEntries+=v.length;
+    else if(v&&Array.isArray(v.areas)){
+      v.areas.forEach(a=>{if(Array.isArray(a.items))totalEntries+=a.items.length;});
+    }
+  });
   const projCount=D.projects?D.projects.length:0;
   const noteCount=D.notes?D.notes.length:0;
   let habitCount=0;
@@ -7082,6 +9452,10 @@ const migModalEl = document.getElementById('migrate-modal');
 if (migModalEl) migModalEl.addEventListener('click', function(e){if(e.target===this)closeMigrateModal()});
 const wnm = document.getElementById('whats-new-modal');
 if (wnm) wnm.addEventListener('click', function(e){if(e.target===this)closeWhatsNewModal()});
+const mam = document.getElementById('monthly-area-modal');
+if (mam) mam.addEventListener('click', function(e){if(e.target===this)closeAreaModal()});
+const wam = document.getElementById('weekly-area-modal');
+if (wam) wam.addEventListener('click', function(e){if(e.target===this)closeWeeklyAreaModal()});
 
 // GLOBAL SHORTCUTS
 document.addEventListener('keydown', e => {
