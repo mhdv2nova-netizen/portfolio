@@ -335,188 +335,6 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 }
 .sidebar-footer{padding:16px 24px;border-top:1px solid var(--border-light);font-size:.58rem;color:var(--text-muted);letter-spacing:0.5px}
 
-/* ═══════════════════ TOGGLE SWITCH COMPONENT ═══════════════════ */
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 46px;
-  height: 24px;
-  flex-shrink: 0;
-  cursor: pointer;
-  user-select: none;
-}
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-.toggle-slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--bg-card-solid);
-  border: 1.5px solid var(--border);
-  border-radius: 24px;
-  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.toggle-slider::before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 2.5px;
-  background-color: var(--text-tertiary);
-  border-radius: 50%;
-  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-.toggle-switch input:checked + .toggle-slider {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-.toggle-switch input:checked + .toggle-slider::before {
-  transform: translateX(20px);
-  background-color: var(--btn-primary-text, #000000);
-}
-
-/* ═══════════════════ FLOATING MARBLE AUTO-HIDE SIDEBAR (DESKTOP) ═══════════════════ */
-.sidebar-peek-tab {
-  display: none;
-}
-.sidebar-hover-zone {
-  display: none;
-}
-
-@media (min-width: 769px) {
-  /* Floating Marble Auto-Hide Enabled */
-  html[data-sidebar-autohide="true"] .sidebar {
-    position: fixed;
-    top: 14px;
-    bottom: 14px;
-    left: 14px;
-    height: calc(100vh - 28px);
-    min-height: auto;
-    width: 268px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%), var(--sidebar-bg);
-    backdrop-filter: blur(36px) saturate(180%);
-    -webkit-backdrop-filter: blur(36px) saturate(180%);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--border), inset 0 1px 1.5px rgba(255, 255, 255, 0.15);
-    transform: translateX(calc(-100% - 24px));
-    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-    z-index: 1000;
-  }
-
-  /* Specific shadow & specular highlights for Light Themes */
-  html[data-theme="rosui-warm"][data-sidebar-autohide="true"] .sidebar,
-  html[data-theme="minimal-light"][data-sidebar-autohide="true"] .sidebar,
-  html[data-theme="classic-paper"][data-sidebar-autohide="true"] .sidebar {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.08) 60%), var(--sidebar-bg);
-    box-shadow: 0 16px 40px rgba(45, 35, 25, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px var(--border), inset 0 1px 2px rgba(255, 255, 255, 0.85);
-  }
-
-  /* Glides into view on Hover or Active Class */
-  html[data-sidebar-autohide="true"] .sidebar:hover,
-  html[data-sidebar-autohide="true"] .sidebar.hover-active {
-    transform: translateX(0);
-    box-shadow: 0 32px 85px rgba(0, 0, 0, 0.85), 0 0 0 1.5px var(--accent-glow), inset 0 1px 2px rgba(255, 255, 255, 0.25);
-  }
-
-  html[data-theme="rosui-warm"][data-sidebar-autohide="true"] .sidebar:hover,
-  html[data-theme="rosui-warm"][data-sidebar-autohide="true"] .sidebar.hover-active,
-  html[data-theme="minimal-light"][data-sidebar-autohide="true"] .sidebar:hover,
-  html[data-theme="minimal-light"][data-sidebar-autohide="true"] .sidebar.hover-active,
-  html[data-theme="classic-paper"][data-sidebar-autohide="true"] .sidebar:hover,
-  html[data-theme="classic-paper"][data-sidebar-autohide="true"] .sidebar.hover-active {
-    box-shadow: 0 20px 50px rgba(45, 35, 25, 0.18), 0 0 0 1.5px var(--accent), inset 0 1px 2px rgba(255, 255, 255, 0.9);
-  }
-
-  /* Elegant Floating Marble Peek Button */
-  html[data-sidebar-autohide="true"] .sidebar-peek-tab {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    position: fixed;
-    top: 20px;
-    left: 16px;
-    padding: 7px 14px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%), var(--sidebar-bg);
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-pill);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    color: var(--text-primary);
-    font-family: var(--body);
-    font-size: 0.76rem;
-    font-weight: 700;
-    cursor: pointer;
-    z-index: 998;
-    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    user-select: none;
-    letter-spacing: 0.6px;
-  }
-  html[data-sidebar-autohide="true"] .sidebar-peek-tab:hover {
-    background: var(--bg-glass-hover);
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: scale(1.05) translateX(3px);
-    box-shadow: 0 12px 36px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  }
-
-  html[data-theme="rosui-warm"][data-sidebar-autohide="true"] .sidebar-peek-tab,
-  html[data-theme="minimal-light"][data-sidebar-autohide="true"] .sidebar-peek-tab,
-  html[data-theme="classic-paper"][data-sidebar-autohide="true"] .sidebar-peek-tab {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 60%), var(--sidebar-bg);
-    box-shadow: 0 8px 24px rgba(45, 35, 25, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8);
-  }
-
-  /* Hotspot Zone along Left Screen Edge to Trigger Open */
-  html[data-sidebar-autohide="true"] .sidebar-hover-zone {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 22px;
-    z-index: 999;
-  }
-
-  /* When Sidebar is hovered, smoothly fade out peek tab */
-  html[data-sidebar-autohide="true"] .sidebar:hover ~ .sidebar-peek-tab,
-  html[data-sidebar-autohide="true"] .sidebar.hover-active ~ .sidebar-peek-tab {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateX(-15px);
-  }
-
-  /* Expand Main Content Canvas */
-  html[data-sidebar-autohide="true"] .main {
-    margin-left: 0 !important;
-    transition: margin-left 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  html[data-sidebar-autohide="true"] .page {
-    padding-left: 54px;
-    padding-right: 44px;
-    max-width: 1360px;
-    transition: padding 0.3s ease;
-  }
-
-  html[data-sidebar-autohide="true"] .sidebar-header {
-    padding: 22px 20px 16px;
-  }
-  html[data-sidebar-autohide="true"] .nav-item {
-    border-radius: var(--radius-sm);
-    margin: 2px 10px;
-  }
-}
-
 /* ═══════════════════ MAIN CONTENT ═══════════════════ */
 .main{margin-left:260px;flex:1;min-height:100vh;position:relative}
 .page{
@@ -2711,20 +2529,8 @@ html, body {
 }
 
 @media(max-width:768px){
-  .sidebar-peek-tab, .sidebar-hover-zone{display:none !important}
-  .sidebar{
-    position:fixed !important;
-    top:0 !important;
-    left:0 !important;
-    bottom:0 !important;
-    height:100vh !important;
-    width:260px !important;
-    border-radius:0 !important;
-    transform:translateX(-100%) !important;
-    box-shadow:none !important;
-  }
-  .sidebar.open{transform:translateX(0) !important;box-shadow:0 0 40px rgba(0,0,0,0.8) !important}
-  .main{margin-left:0 !important}
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
   .mobile-topbar{display:flex}
   .mobile-toggle{display:none !important}
   .mobile-bottom-nav{display:block}
@@ -3957,14 +3763,6 @@ html, body {
 <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation menu">☰</button>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
-<!-- Desktop Auto-Hide Sidebar Triggers -->
-<div class="sidebar-hover-zone" id="sidebar-hover-zone" aria-hidden="true"></div>
-<button class="sidebar-peek-tab" id="sidebar-peek-tab" onclick="toggleAutoHideSidebarHover()" aria-label="Expand Sidebar">
-  <svg class="kinetic-brand-mark" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><path d="M4 4v16"/><path d="M4 12l8-8"/><path d="M7 12l9 8"/><polyline points="14 8 20 12 14 16"/></svg>
-  <span>MENU</span>
-  <span style="font-size:0.75rem;color:var(--accent);margin-left:2px;line-height:1">›</span>
-</button>
-
 <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main sidebar navigation">
 <header class="sidebar-header"><h1><svg class="kinetic-brand-mark" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:-3px" aria-hidden="true"><path d="M4 4v16"/><path d="M4 12l8-8"/><path d="M7 12l9 8"/><polyline points="14 8 20 12 14 16"/></svg>KINETIC</h1><p>v5.0 Pro</p></header>
 <div class="sidebar-search-btn" onclick="openCommandPalette()" role="button" tabindex="0" aria-label="Search and command palette" onkeydown="if(event.key==='Enter'||event.key===' ')openCommandPalette()"><span style="display:flex;align-items:center;gap:8px"><span>🔍</span> <span>Search / Cmds</span></span><span class="kbd-shortcut">Ctrl+K</span></div>
@@ -4397,21 +4195,6 @@ html, body {
     <div class="range-slider-wrap">
       <input type="range" class="range-slider" id="grid-opacity-slider" min="0" max="100" value="10" oninput="updateGridOpacity(this.value)">
       <span style="font-size:0.85rem; font-weight:600; min-width:35px; text-align:right;" id="grid-opacity-val">10%</span>
-    </div>
-  </div>
-
-  <div class="settings-group">
-    <h3>Sidebar Appearance & Auto-Hide</h3>
-    <p class="group-desc">Choose between a fixed standard sidebar or a floating marble sidebar that automatically collapses for an expansive widescreen canvas.</p>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:10px">
-      <div>
-        <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)">Auto-Hide Floating Marble Sidebar</div>
-        <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px">Smoothly collapses on desktop and glides into view on hover (Desktop only)</div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle Auto-Hide Sidebar">
-        <input type="checkbox" id="sidebar-autohide-toggle" onchange="updateSidebarAutoHide(this.checked)">
-        <span class="toggle-slider"></span>
-      </label>
     </div>
   </div>
 
@@ -5768,58 +5551,8 @@ document.addEventListener('visibilitychange', () => {
 
 function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');const nm=['index','guide','daily','weekly','monthly','future','habits','projects','notes','settings','trash'];const ni=document.querySelectorAll('.nav-item');const i=nm.indexOf(p);if(i>=0&&ni[i])ni[i].classList.add('active');if(p==='index')rIndex();if(p==='daily')rD();if(p==='weekly')rW();if(p==='monthly')rMon();if(p==='future')rFut();if(p==='habits')rH();if(p==='projects')rPJ();if(p==='notes')rNotes();if(p==='settings')rSettings();if(p==='trash')rTrash();closeSidebar();updateBottomNav(p)}
 function updateBottomNav(p){document.querySelectorAll('.mob-nav-item').forEach(x=>{x.classList.remove('active');if(x.dataset.page===p)x.classList.add('active');});if(!['daily','weekly','habits','notes'].includes(p)){document.querySelectorAll('.mob-nav-item').forEach(x=>x.classList.remove('active'))}}
-function toggleSidebar(){
-  const s = document.getElementById('sidebar');
-  if (!s) return;
-  s.classList.toggle('open');
-  const overlay = document.getElementById('sidebar-overlay');
-  if (overlay) overlay.classList.toggle('active');
-}
-function closeSidebar(){
-  const s = document.getElementById('sidebar');
-  if (s) {
-    s.classList.remove('open');
-    s.classList.remove('hover-active');
-  }
-  const overlay = document.getElementById('sidebar-overlay');
-  if (overlay) overlay.classList.remove('active');
-}
-function toggleAutoHideSidebarHover(){
-  const s = document.getElementById('sidebar');
-  if (!s) return;
-  if (window.innerWidth <= 768) {
-    toggleSidebar();
-  } else {
-    s.classList.toggle('hover-active');
-  }
-}
-function setupSidebarAutoHideListeners() {
-  const sidebar = document.getElementById('sidebar');
-  const hoverZone = document.getElementById('sidebar-hover-zone');
-  const peekTab = document.getElementById('sidebar-peek-tab');
-
-  if (hoverZone && sidebar) {
-    hoverZone.addEventListener('mouseenter', () => {
-      if (bujoPrefs.autoHideSidebar !== false && window.innerWidth > 768) {
-        sidebar.classList.add('hover-active');
-      }
-    });
-  }
-  if (peekTab && sidebar) {
-    peekTab.addEventListener('mouseenter', () => {
-      if (bujoPrefs.autoHideSidebar !== false && window.innerWidth > 768) {
-        sidebar.classList.add('hover-active');
-      }
-    });
-  }
-  if (sidebar) {
-    sidebar.addEventListener('mouseleave', () => {
-      if (bujoPrefs.autoHideSidebar !== false && window.innerWidth > 768) {
-        sidebar.classList.remove('hover-active');
-      }
-    });
-  }
-}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('active')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('active')}
 function showGuide(id,btn){document.querySelectorAll('.guide-panel').forEach(p=>p.style.display='none');document.getElementById('guide-'+id).style.display='block';document.querySelectorAll('.guide-nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
 
 // CUSTOM TYPE SELECTOR HELPERS
@@ -9020,8 +8753,7 @@ let bujoPrefs = {
   theme: 'acid-lime',
   fontHeading: "'Archivo Black', 'Syne', sans-serif",
   fontBody: "'Plus Jakarta Sans', sans-serif",
-  gridOpacity: 10,
-  autoHideSidebar: true
+  gridOpacity: 10
 };
 const THEMES = [
   { id: 'acid-lime', name: 'Acid Lime & Neo-Brutalist', colors: ['#141414', '#1C1C1C', '#C5F82A', '#FFFFFF'] },
@@ -9067,9 +8799,6 @@ function applyPrefs() {
   document.documentElement.style.setProperty('--font-body', bujoPrefs.fontBody);
   document.documentElement.style.setProperty('--font-hand', bujoPrefs.fontBody);
   
-  const autoHide = bujoPrefs.autoHideSidebar !== false;
-  document.documentElement.setAttribute('data-sidebar-autohide', autoHide ? 'true' : 'false');
-  
   let dotAlpha = (bujoPrefs.gridOpacity !== undefined ? bujoPrefs.gridOpacity : 10) / 100;
   let dotColor = 'rgba(197, 248, 42, ' + dotAlpha + ')';
   if (['minimal-light', 'classic-paper', 'rosui-warm'].includes(bujoPrefs.theme)) {
@@ -9106,10 +8835,6 @@ function rSettings() {
   const gridOp = bujoPrefs.gridOpacity !== undefined ? bujoPrefs.gridOpacity : 10;
   document.getElementById('grid-opacity-slider').value = gridOp;
   document.getElementById('grid-opacity-val').textContent = gridOp + '%';
-
-  const autoHideToggle = document.getElementById('sidebar-autohide-toggle');
-  if (autoHideToggle) autoHideToggle.checked = bujoPrefs.autoHideSidebar !== false;
-
   renderDataStats();
 }
 function selectTheme(themeId) {
@@ -9146,12 +8871,6 @@ function updateGridOpacity(val) {
   document.getElementById('grid-opacity-val').textContent = val + '%';
   savePrefs();
   applyPrefs();
-}
-function updateSidebarAutoHide(val) {
-  bujoPrefs.autoHideSidebar = !!val;
-  savePrefs();
-  applyPrefs();
-  rSettings();
 }
 
 // COMMAND PALETTE / OMNISEARCH SYSTEM
@@ -9701,16 +9420,12 @@ function navWhatsNewSlide(dir) {
 document.addEventListener('DOMContentLoaded', ()=>{
   loadPrefs();
   applyPrefs();
-  setupSidebarAutoHideListeners();
   calDay=new Date(curDay);
   rIndex();
   rDL(); 
   if(window.pywebview) { loadFromPython(); }
   setTimeout(() => showWhatsNewModal(false), 500);
 });
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setupSidebarAutoHideListeners();
-}
 
 function loadFromPython() {
   if (window.pywebview && window.pywebview.api && window.pywebview.api.load_data) {
