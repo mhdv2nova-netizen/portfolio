@@ -3000,9 +3000,21 @@ html, body {
 .db-focus-item.complete {
   opacity: 0.6;
 }
-
 .db-focus-item.complete .db-focus-text {
   text-decoration: line-through;
+  color: var(--text-secondary);
+}
+.db-focus-item.irrelevant {
+  opacity: 0.4;
+}
+.db-focus-item.irrelevant .db-focus-text {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+.db-focus-item.migrated {
+  opacity: 0.55;
+}
+.db-focus-item.migrated .db-focus-text {
   color: var(--text-secondary);
 }
 
@@ -3107,9 +3119,21 @@ html, body {
 .db-task-item.complete {
   opacity: 0.55;
 }
-
 .db-task-item.complete .db-task-title {
   text-decoration: line-through;
+}
+.db-task-item.irrelevant {
+  opacity: 0.4;
+}
+.db-task-item.irrelevant .db-task-title {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+.db-task-item.migrated {
+  opacity: 0.55;
+}
+.db-task-item.migrated .db-task-title {
+  color: var(--text-secondary);
 }
 
 .db-task-bullet {
@@ -4763,16 +4787,18 @@ function rIndex() {
 
   const entries = D.dailyLogs[todayDK] || [];
   const tasks = entries.filter(e => e.type === 'task');
-  const doneTasks = tasks.filter(e => e.state === 'complete');
-  const totalTasksCount = tasks.length;
+  const activeTasks = tasks.filter(e => e.state !== 'irrelevant' && e.state !== 'migrated');
+  const doneTasks = activeTasks.filter(e => e.state === 'complete');
+  const pendingTasks = activeTasks.filter(e => e.state === 'incomplete');
+  const totalTasksCount = activeTasks.length;
   const doneTasksCount = doneTasks.length;
+  const pendingTasksCount = pendingTasks.length;
   const taskPct = totalTasksCount > 0 ? Math.round((doneTasksCount / totalTasksCount) * 100) : 0;
 
-  // 1. TODAY'S FOCUS
+  // 1. TODAY'S FOCUS: Exclude irrelevant/migrated tasks, prioritize Starred then Incomplete
   const focusBody = document.getElementById('db-focus-body');
   const focusCountBadge = document.getElementById('db-focus-count');
-  // Sort priority tasks (★) first, then incomplete tasks
-  const focusTasks = [...tasks].sort((a, b) => {
+  const focusTasks = [...activeTasks].sort((a, b) => {
     if (a.priority && !b.priority) return -1;
     if (!a.priority && b.priority) return 1;
     if (a.state === 'incomplete' && b.state !== 'incomplete') return -1;
@@ -4786,7 +4812,7 @@ function rIndex() {
     if (!focusTasks.length) {
       focusBody.innerHTML = `
         <div class="db-focus-empty">
-          <p>No focus items set for today.</p>
+          <p>No active focus items for today.</p>
           <button class="btn-pill btn-pill-primary" onclick="openQuickAdd('task')" style="padding:6px 14px;font-size:0.75rem">
             + SET TODAY'S FOCUS
           </button>
@@ -4821,7 +4847,7 @@ function rIndex() {
   if (taskStats) {
     taskStats.innerHTML = `
       <div class="db-stat-pill">Completed: <strong>${doneTasksCount}</strong></div>
-      <div class="db-stat-pill">Pending: <strong>${totalTasksCount - doneTasksCount}</strong></div>
+      <div class="db-stat-pill">Pending: <strong>${pendingTasksCount}</strong></div>
       <div class="db-stat-pill">Total: <strong>${totalTasksCount}</strong></div>`;
   }
 
@@ -4831,10 +4857,13 @@ function rIndex() {
     } else {
       todayTasksList.innerHTML = tasks.map(t => {
         const isDone = t.state === 'complete';
+        const isIrrelevant = t.state === 'irrelevant';
+        const isMigrated = t.state === 'migrated';
         const s = sym('task', t.state);
         const bc = bcl('task', t.state);
+        const itemClass = isIrrelevant ? 'irrelevant' : isMigrated ? 'migrated' : isDone ? 'complete' : '';
         return `
-          <div class="db-task-item ${isDone ? 'complete' : ''}">
+          <div class="db-task-item ${itemClass}">
             <div class="db-task-bullet ${bc}" onclick="cycIndexTask('${t.id}')">${s}</div>
             <div class="db-task-title" onclick="cycIndexTask('${t.id}')" style="cursor:pointer">
               ${t.priority ? '<span style="color:var(--rose)">★ </span>' : ''}${esc(t.text)}
@@ -4896,7 +4925,7 @@ function rIndex() {
     const d = new Date(wStart);
     d.setDate(d.getDate() + i);
     const dLogs = D.dailyLogs[dk(d)] || [];
-    const dTasks = dLogs.filter(e => e.type === 'task');
+    const dTasks = dLogs.filter(e => e.type === 'task' && e.state !== 'irrelevant' && e.state !== 'migrated');
     const dDone = dTasks.filter(e => e.state === 'complete').length;
 
     weekTotalTasks += dTasks.length;
@@ -4972,6 +5001,8 @@ function cycIndexTask(id) {
   if (!e || e.type !== 'task') return;
   // Dashboard toggle logic: switch between incomplete and complete
   if (e.state === 'complete') {
+    e.state = 'incomplete';
+  } else if (e.state === 'irrelevant' || e.state === 'migrated') {
     e.state = 'incomplete';
   } else {
     e.state = 'complete';
