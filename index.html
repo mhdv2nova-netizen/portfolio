@@ -265,7 +265,7 @@ html[data-theme="glass-dark"] {
 }
 
 html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--text-primary);display:flex;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--body);background:var(--bg);background-image:var(--theme-wallpaper, none);background-size:cover;background-position:center center;background-attachment:fixed;background-repeat:no-repeat;color:var(--text-primary);display:flex;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
 /* ═══════════════════ SIDEBAR ═══════════════════ */
 .sidebar{
@@ -517,7 +517,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 
 /* In-Card compact trigger */
 .monthly-area-add-form .custom-type-trigger,
-.weekly-area-add-form .custom-type-trigger{
+.weekly-area-add-form .custom-type-trigger,
+.weekly-day-add .custom-type-trigger{
   height:28px;
   padding:3px 8px;
   font-size:0.72rem;
@@ -525,12 +526,14 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
   border-color:transparent;
 }
 .monthly-area-add-form .custom-type-trigger:hover,
-.weekly-area-add-form .custom-type-trigger:hover{
+.weekly-area-add-form .custom-type-trigger:hover,
+.weekly-day-add .custom-type-trigger:hover{
   background:var(--bg-glass-hover);
   border-color:var(--border-light);
 }
 .monthly-area-add-form .custom-type-trigger.open,
-.weekly-area-add-form .custom-type-trigger.open{
+.weekly-area-add-form .custom-type-trigger.open,
+.weekly-day-add .custom-type-trigger.open{
   background:var(--bg-glass-active);
   border-color:var(--accent);
 }
@@ -1030,14 +1033,14 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 .weekly-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:26px}
 .weekly-day-col{
   background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);
-  border:1px solid var(--border);overflow:hidden;min-height:200px;
-  display:flex;flex-direction:column;transition:all .25s;
+  border:1px solid var(--border);overflow:visible;min-height:200px;
+  display:flex;flex-direction:column;transition:all .25s;position:relative;
 }
 .weekly-day-col:hover{border-color:var(--accent-soft);box-shadow:0 4px 20px rgba(167,139,250,0.08)}
 .weekly-day-col.today{border-color:rgba(167,139,250,0.3);box-shadow:0 0 0 1px var(--accent-soft),0 4px 20px rgba(167,139,250,0.12)}
 .weekly-day-header{
   padding:12px 14px;text-align:center;font-size:.72rem;font-weight:500;
-  cursor:pointer;transition:all .2s;
+  cursor:pointer;transition:all .2s;border-radius:var(--radius) var(--radius) 0 0;
   background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
   border-bottom:1px solid var(--border-light);
 }
@@ -2471,6 +2474,346 @@ html[data-theme="toota-clean"] .weekly-area-notes-box {
   background: #F9FAFB;
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 12px;
+}
+
+/* ═══════════════════ PROFIT CYBER PURPLE (PANTHER MASK) ═══════════════════ */
+html[data-theme="profit-purple"] {
+  --theme-wallpaper: url('./assets/wallpapers/mech_skull_purple.jpg');
+  --bg: #140520;
+  --bg-secondary: rgba(28, 10, 44, 0.85);
+  --bg-card: rgba(26, 8, 42, 0.72);
+  --bg-card-solid: #1e0b30;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-glass-active: rgba(255, 255, 255, 0.15);
+
+  --sidebar-bg: rgba(16, 5, 26, 0.92);
+  --sidebar-border: rgba(192, 38, 211, 0.25);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --text-tertiary: #A78BFA;
+  --text-muted: #6B7280;
+
+  --accent: #C026D3; /* Electric Purple / Fuchsia */
+  --accent-hover: #D946EF;
+  --accent-glow: rgba(192, 38, 211, 0.45);
+  --accent-soft: rgba(192, 38, 211, 0.18);
+  --btn-primary-text: #FFFFFF;
+  --accent-contrast: #FFFFFF;
+
+  --accent2: #38BDF8; /* Electric Cyan */
+  --accent2-soft: rgba(56, 189, 248, 0.18);
+  --green: #4ADE80;
+  --green-soft: rgba(74, 222, 128, 0.18);
+  --orange: #FB923C;
+  --orange-soft: rgba(251, 146, 60, 0.18);
+  --rose: #F43F5E;
+  --rose-soft: rgba(244, 63, 94, 0.18);
+  --purple: #A855F7;
+  --purple-soft: rgba(168, 85, 247, 0.18);
+  --cyan: #22D3EE;
+  --cyan-soft: rgba(34, 211, 238, 0.18);
+
+  --terracotta-bg: #C026D3;
+  --terracotta-text: #FFFFFF;
+  --terracotta-subtext: #38BDF8;
+  --yellow-banner: #C026D3;
+  --yellow-banner-text: #FFFFFF;
+
+  --border: rgba(192, 38, 211, 0.28);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --dot: rgba(192, 38, 211, 0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 15px rgba(192, 38, 211, 0.15);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.7), 0 0 25px rgba(192, 38, 211, 0.25);
+
+  --font-heading: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #C026D3 0%, #7E22CE 100%);
+  --gradient-warm: linear-gradient(135deg, #F43F5E 0%, #C026D3 100%);
+  --gradient-cool: linear-gradient(135deg, #38BDF8 0%, #C026D3 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(192,38,211,0.2) 0%, rgba(26,8,42,0.85) 100%);
+}
+
+/* ═══════════════════ PROFIT CRIMSON ONI (RED BEAST) ═══════════════════ */
+html[data-theme="profit-crimson"] {
+  --theme-wallpaper: url('./assets/wallpapers/mech_skull_crimson.jpg');
+  --bg: #1A0306;
+  --bg-secondary: rgba(38, 8, 12, 0.85);
+  --bg-card: rgba(34, 6, 10, 0.72);
+  --bg-card-solid: #26080d;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-glass-active: rgba(255, 255, 255, 0.15);
+
+  --sidebar-bg: rgba(20, 3, 6, 0.92);
+  --sidebar-border: rgba(239, 68, 68, 0.25);
+
+  --text-primary: #FFF1F2;
+  --text-secondary: #FECDD3;
+  --text-tertiary: #F87171;
+  --text-muted: #7F1D1D;
+
+  --accent: #EF4444; /* Fiery Crimson Scarlet */
+  --accent-hover: #DC2626;
+  --accent-glow: rgba(239, 68, 68, 0.5);
+  --accent-soft: rgba(239, 68, 68, 0.18);
+  --btn-primary-text: #FFFFFF;
+  --accent-contrast: #FFFFFF;
+
+  --accent2: #F97316; /* Fire Orange */
+  --accent2-soft: rgba(249, 115, 22, 0.18);
+  --green: #22C55E;
+  --green-soft: rgba(34, 197, 94, 0.18);
+  --orange: #F97316;
+  --orange-soft: rgba(249, 115, 22, 0.18);
+  --rose: #FF2A4D;
+  --rose-soft: rgba(255, 42, 77, 0.18);
+  --purple: #C084FC;
+  --purple-soft: rgba(192, 132, 252, 0.18);
+  --cyan: #38BDF8;
+  --cyan-soft: rgba(56, 189, 248, 0.18);
+
+  --terracotta-bg: #EF4444;
+  --terracotta-text: #FFFFFF;
+  --terracotta-subtext: #F97316;
+  --yellow-banner: #EF4444;
+  --yellow-banner-text: #FFFFFF;
+
+  --border: rgba(239, 68, 68, 0.28);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --dot: rgba(239, 68, 68, 0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(239, 68, 68, 0.18);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(239, 68, 68, 0.28);
+
+  --font-heading: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #EF4444 0%, #991B1B 100%);
+  --gradient-warm: linear-gradient(135deg, #F97316 0%, #EF4444 100%);
+  --gradient-cool: linear-gradient(135deg, #EF4444 0%, #7C2D12 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(34,6,10,0.85) 100%);
+}
+
+/* ═══════════════════ PROFIT COBALT TECH (JORDAN BLUE) ═══════════════════ */
+html[data-theme="profit-cobalt"] {
+  --theme-wallpaper: url('./assets/wallpapers/mech_skull_cobalt.jpg');
+  --bg: #030A1C;
+  --bg-secondary: rgba(8, 20, 48, 0.85);
+  --bg-card: rgba(6, 16, 42, 0.72);
+  --bg-card-solid: #091a42;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-glass-active: rgba(255, 255, 255, 0.15);
+
+  --sidebar-bg: rgba(4, 10, 26, 0.92);
+  --sidebar-border: rgba(59, 130, 246, 0.25);
+
+  --text-primary: #F0F9FF;
+  --text-secondary: #BAE6FD;
+  --text-tertiary: #60A5FA;
+  --text-muted: #1E3A8A;
+
+  --accent: #3B82F6; /* Electric Cobalt Blue */
+  --accent-hover: #2563EB;
+  --accent-glow: rgba(59, 130, 246, 0.5);
+  --accent-soft: rgba(59, 130, 246, 0.18);
+  --btn-primary-text: #FFFFFF;
+  --accent-contrast: #FFFFFF;
+
+  --accent2: #00F0FF; /* Neon Cyan */
+  --accent2-soft: rgba(0, 240, 255, 0.18);
+  --green: #22C55E;
+  --green-soft: rgba(34, 197, 94, 0.18);
+  --orange: #F59E0B;
+  --orange-soft: rgba(245, 158, 11, 0.18);
+  --rose: #F43F5E;
+  --rose-soft: rgba(244, 63, 94, 0.18);
+  --purple: #8B5CF6;
+  --purple-soft: rgba(139, 92, 246, 0.18);
+  --cyan: #00F0FF;
+  --cyan-soft: rgba(0, 240, 255, 0.18);
+
+  --terracotta-bg: #3B82F6;
+  --terracotta-text: #FFFFFF;
+  --terracotta-subtext: #00F0FF;
+  --yellow-banner: #3B82F6;
+  --yellow-banner-text: #FFFFFF;
+
+  --border: rgba(59, 130, 246, 0.28);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --dot: rgba(59, 130, 246, 0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(59, 130, 246, 0.2);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(59, 130, 246, 0.3);
+
+  --font-heading: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  --gradient-warm: linear-gradient(135deg, #00F0FF 0%, #3B82F6 100%);
+  --gradient-cool: linear-gradient(135deg, #00F0FF 0%, #8B5CF6 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(6,16,42,0.85) 100%);
+}
+
+/* ═══════════════════ PROFIT ACID VENOM (SB MASK) ═══════════════════ */
+html[data-theme="profit-green"] {
+  --theme-wallpaper: url('./assets/wallpapers/mech_skull_green.jpg');
+  --bg: #03140A;
+  --bg-secondary: rgba(6, 32, 16, 0.85);
+  --bg-card: rgba(5, 26, 13, 0.72);
+  --bg-card-solid: #072e17;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-glass-active: rgba(255, 255, 255, 0.15);
+
+  --sidebar-bg: rgba(3, 18, 9, 0.92);
+  --sidebar-border: rgba(34, 197, 94, 0.25);
+
+  --text-primary: #F0FDF4;
+  --text-secondary: #BBF7D0;
+  --text-tertiary: #4ADE80;
+  --text-muted: #14532D;
+
+  --accent: #22C55E; /* Toxic Acid Green */
+  --accent-hover: #16A34A;
+  --accent-glow: rgba(34, 197, 94, 0.5);
+  --accent-soft: rgba(34, 197, 94, 0.18);
+  --btn-primary-text: #000000;
+  --accent-contrast: #000000;
+
+  --accent2: #A3E635; /* Lime Neon */
+  --accent2-soft: rgba(163, 230, 53, 0.18);
+  --green: #22C55E;
+  --green-soft: rgba(34, 197, 94, 0.18);
+  --orange: #F97316;
+  --orange-soft: rgba(249, 115, 22, 0.18);
+  --rose: #F43F5E;
+  --rose-soft: rgba(244, 63, 94, 0.18);
+  --purple: #A855F7;
+  --purple-soft: rgba(168, 85, 247, 0.18);
+  --cyan: #06B6D4;
+  --cyan-soft: rgba(6, 182, 212, 0.18);
+
+  --terracotta-bg: #22C55E;
+  --terracotta-text: #000000;
+  --terracotta-subtext: #A3E635;
+  --yellow-banner: #22C55E;
+  --yellow-banner-text: #000000;
+
+  --border: rgba(34, 197, 94, 0.28);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --dot: rgba(34, 197, 94, 0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(34, 197, 94, 0.2);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(34, 197, 94, 0.3);
+
+  --font-heading: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #22C55E 0%, #15803D 100%);
+  --gradient-warm: linear-gradient(135deg, #A3E635 0%, #22C55E 100%);
+  --gradient-cool: linear-gradient(135deg, #22C55E 0%, #06B6D4 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(5,26,13,0.85) 100%);
+}
+
+/* Profit Themes Shared Component Styles */
+html[data-theme^="profit-"] body {
+  background-image: var(--theme-wallpaper);
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+html[data-theme^="profit-"] .main {
+  background: rgba(0, 0, 0, 0.38);
+}
+html[data-theme^="profit-"] .sidebar {
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+html[data-theme^="profit-"] .sidebar-header h1 {
+  color: #FFFFFF !important;
+  text-shadow: 0 0 12px var(--accent);
+}
+html[data-theme^="profit-"] .sidebar-header .kinetic-brand-mark {
+  stroke: var(--accent) !important;
+  color: var(--accent) !important;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+html[data-theme^="profit-"] .sidebar .nav-item.active {
+  background: var(--accent) !important;
+  color: var(--btn-primary-text, #FFFFFF) !important;
+  box-shadow: 0 4px 20px var(--accent-glow) !important;
+  font-weight: 700;
+  border-radius: 9999px;
+}
+html[data-theme^="profit-"] .sidebar .nav-item.active .nav-icon svg {
+  stroke: var(--btn-primary-text, #FFFFFF) !important;
+}
+html[data-theme^="profit-"] .sidebar .nav-item {
+  border-radius: 9999px;
+  margin: 3px 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+html[data-theme^="profit-"] .sidebar .nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+html[data-theme^="profit-"] .index-card,
+html[data-theme^="profit-"] .db-card,
+html[data-theme^="profit-"] .monthly-area-card,
+html[data-theme^="profit-"] .weekly-area-card,
+html[data-theme^="profit-"] .calendar-card,
+html[data-theme^="profit-"] .settings-card,
+html[data-theme^="profit-"] .note-card,
+html[data-theme^="profit-"] .modal {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 20px var(--accent-soft);
+}
+html[data-theme^="profit-"] .db-action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  font-weight: 600;
+}
+html[data-theme^="profit-"] .db-action-btn:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px var(--accent-soft);
+}
+html[data-theme^="profit-"] .db-action-btn.primary,
+html[data-theme^="profit-"] .btn-pill-primary {
+  background: var(--accent) !important;
+  color: var(--btn-primary-text, #FFFFFF) !important;
+  border-color: var(--accent) !important;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px var(--accent-glow) !important;
+}
+html[data-theme^="profit-"] .db-action-btn.primary:hover,
+html[data-theme^="profit-"] .btn-pill-primary:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  box-shadow: 0 6px 24px var(--accent-glow) !important;
 }
 
 /* Settings Styles */
@@ -5872,6 +6215,10 @@ function renderCustomTypePickerHTML(pickerId, inputId, defaultVal = 'task', isGo
   `;
 }
 
+let lastWeeklyDayType = {};
+let lastWeeklyAreaType = {};
+let lastMonthlyAreaType = {};
+
 function toggleCustomTypePicker(pickerId) {
   const picker = document.getElementById(pickerId);
   if (!picker) return;
@@ -5884,13 +6231,13 @@ function toggleCustomTypePicker(pickerId) {
       m.classList.remove('open');
       const tr = m.closest('.custom-type-picker')?.querySelector('.custom-type-trigger');
       if (tr) tr.classList.remove('open');
-      const card = m.closest('.monthly-area-card, .weekly-area-card');
+      const card = m.closest('.monthly-area-card, .weekly-area-card, .weekly-day-col');
       if (card) card.style.zIndex = '';
     }
   });
 
   if (menu && trigger) {
-    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card');
+    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card, .weekly-day-col');
     if (isOpen) {
       menu.classList.remove('open');
       trigger.classList.remove('open');
@@ -5918,12 +6265,24 @@ function selectCustomType(pickerId, inputId, value, badge, label) {
   const input = document.getElementById(inputId);
   if (input) input.value = value;
 
+  if (inputId.startsWith('wt-')) {
+    const dkey = inputId.replace('wt-', '');
+    lastWeeklyDayType[dkey] = value;
+    lastWeeklyDayType['global'] = value;
+  } else if (inputId.startsWith('w-area-item-type-')) {
+    const aid = inputId.replace('w-area-item-type-', '');
+    lastWeeklyAreaType[aid] = value;
+  } else if (inputId.startsWith('matype-')) {
+    const aid = inputId.replace('matype-', '');
+    lastMonthlyAreaType[aid] = value;
+  }
+
   if (picker) {
     const badgeEl = picker.querySelector('.ct-badge');
     const textEl = picker.querySelector('.ct-text');
     const menu = picker.querySelector('.custom-type-menu');
     const trigger = picker.querySelector('.custom-type-trigger');
-    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card');
+    const parentCard = picker.closest('.monthly-area-card, .weekly-area-card, .weekly-day-col');
 
     if (badgeEl) badgeEl.textContent = badge;
     if (textEl) textEl.textContent = label;
@@ -5947,7 +6306,7 @@ document.addEventListener('click', (e) => {
       m.classList.remove('open');
       const tr = m.closest('.custom-type-picker')?.querySelector('.custom-type-trigger');
       if (tr) tr.classList.remove('open');
-      const card = m.closest('.monthly-area-card, .weekly-area-card');
+      const card = m.closest('.monthly-area-card, .weekly-area-card, .weekly-day-col');
       if (card) card.style.zIndex = '';
     });
   }
@@ -6208,6 +6567,8 @@ function rW(){
       });
     }
 
+    const dayType = lastWeeklyDayType[dkey] || lastWeeklyDayType['global'] || 'task';
+
     cols+=`<div class="weekly-day-col${isToday?' today':''}">
       <div class="weekly-day-header" onclick="goToDayFromWeek('${dkey}')">
         <div class="wdh-name">${DA[d.getDay()]}</div>
@@ -6215,9 +6576,7 @@ function rW(){
       </div>
       <div class="weekly-day-body">${entriesHtml}</div>
       <div class="weekly-day-add">
-        <select id="wt-${dkey}" style="font-size:.6rem;padding:3px;border:1px solid var(--border);border-radius:4px;background:var(--bg-card-solid);color:var(--text-secondary)">
-          <option value="task">•</option><option value="event">○</option><option value="note">—</option>
-        </select>
+        ${renderCustomTypePickerHTML('ctp-wd-' + dkey, 'wt-' + dkey, dayType, false)}
         <input type="text" id="wi-${dkey}" placeholder="Add..." onkeydown="if(event.key==='Enter')addW('${dkey}')">
         <button onclick="addW('${dkey}')">+</button>
       </div>
@@ -6232,11 +6591,19 @@ function rW(){
 function addW(dkey){
   const inp=document.getElementById('wi-'+dkey);
   const sel=document.getElementById('wt-'+dkey);
-  const text=inp.value.trim();if(!text)return;
-  const type=sel.value;
+  const text=inp ? inp.value.trim() : '';
+  if(!text)return;
+  const type = sel ? sel.value : 'task';
+  lastWeeklyDayType[dkey] = type;
+  lastWeeklyDayType['global'] = type;
   if(!D.dailyLogs[dkey])D.dailyLogs[dkey]=[];
   D.dailyLogs[dkey].push({id:gid(),type,text,priority:false,state:type==='task'?'incomplete':null,subtasks:[]});
-  save();inp.value='';rW();
+  save();
+  rW();
+  setTimeout(() => {
+    const nextInp = document.getElementById('wi-' + dkey);
+    if (nextInp) nextInp.focus();
+  }, 10);
 }
 
 function cycW(dkey,id){
@@ -6522,7 +6889,7 @@ function rWG() {
             </div>
 
             <div class="weekly-area-add-form">
-              ${renderCustomTypePickerHTML('ctp-w-' + area.id, 'w-area-item-type-' + area.id, 'goal', true)}
+              ${renderCustomTypePickerHTML('ctp-w-' + area.id, 'w-area-item-type-' + area.id, lastWeeklyAreaType[area.id] || 'goal', true)}
               <input type="text" id="w-area-item-input-${area.id}" placeholder="Add weekly goal/task... (#tags)" onkeydown="if(event.key==='Enter')addWeeklyAreaEntry('${area.id}')">
               <button type="button" onclick="addWeeklyAreaEntry('${area.id}')">Add</button>
             </div>
@@ -6768,6 +7135,7 @@ function addWeeklyAreaEntry(areaId) {
   if (!text) return;
 
   const type = typeSel ? typeSel.value : 'goal';
+  lastWeeklyAreaType[areaId] = type;
   const k = wgKey();
   const data = ensureWeeklyObject(k);
   const area = (data.areas || []).find(a => a.id === areaId);
@@ -6784,8 +7152,11 @@ function addWeeklyAreaEntry(areaId) {
   });
 
   save();
-  textInp.value = '';
   rWG();
+  setTimeout(() => {
+    const nextInp = document.getElementById(`w-area-item-input-${areaId}`);
+    if (nextInp) nextInp.focus();
+  }, 10);
   showToast('Weekly item added!');
 }
 
@@ -7165,7 +7536,7 @@ function rME() {
 
           <!-- Quick Add Row -->
           <div class="monthly-area-add-form">
-            ${renderCustomTypePickerHTML('ctp-m-' + area.id, 'matype-' + area.id, 'task', true)}
+            ${renderCustomTypePickerHTML('ctp-m-' + area.id, 'matype-' + area.id, lastMonthlyAreaType[area.id] || 'task', true)}
             <input
               type="text"
               id="mainp-${area.id}"
@@ -7429,6 +7800,7 @@ function addAreaEntry(areaId) {
   const text = textInput.value.trim();
   if (!text) return;
   const type = typeSelect ? typeSelect.value : 'task';
+  lastMonthlyAreaType[areaId] = type;
 
   const k = mkk(curMonth);
   const mData = ensureMonthlyObject(k);
@@ -7446,8 +7818,11 @@ function addAreaEntry(areaId) {
   });
 
   save();
-  textInput.value = '';
   rME();
+  setTimeout(() => {
+    const nextInp = document.getElementById(`mainp-${areaId}`);
+    if (nextInp) nextInp.focus();
+  }, 10);
 }
 
 // Backward Compatibility addME
@@ -9035,6 +9410,10 @@ let bujoPrefs = {
   gridOpacity: 10
 };
 const THEMES = [
+  { id: 'profit-purple', name: 'Profit Cyber Purple (4K Panther)', colors: ['#140520', '#C026D3', '#38BDF8', '#F8FAFC'] },
+  { id: 'profit-crimson', name: 'Profit Crimson Oni (4K Beast)', colors: ['#1A0306', '#EF4444', '#F97316', '#FFF1F2'] },
+  { id: 'profit-cobalt', name: 'Profit Cobalt Tech (4K Jordan)', colors: ['#030A1C', '#3B82F6', '#00F0FF', '#F0F9FF'] },
+  { id: 'profit-green', name: 'Profit Acid Venom (4K SB Mask)', colors: ['#03140A', '#22C55E', '#A3E635', '#F0FDF4'] },
   { id: 'toota-clean', name: 'Toota Studio Minimal', colors: ['#ECECEF', '#FFFFFF', '#121417', '#22C55E'] },
   { id: 'acid-lime', name: 'Acid Lime & Neo-Brutalist', colors: ['#141414', '#1C1C1C', '#C5F82A', '#FFFFFF'] },
   { id: 'rosui-warm', name: 'Rosui Warm Cream & Terracotta', colors: ['#EFE8D5', '#FAF6EC', '#D65A54', '#F5B82E'] },
@@ -9086,6 +9465,14 @@ function applyPrefs() {
     if (bujoPrefs.theme === 'classic-paper') {
       dotColor = 'rgba(46, 37, 28, ' + dotAlpha * 1.5 + ')';
     }
+  } else if (bujoPrefs.theme === 'profit-purple') {
+    dotColor = 'rgba(192, 38, 211, ' + (dotAlpha * 0.5) + ')';
+  } else if (bujoPrefs.theme === 'profit-crimson') {
+    dotColor = 'rgba(239, 68, 68, ' + (dotAlpha * 0.5) + ')';
+  } else if (bujoPrefs.theme === 'profit-cobalt') {
+    dotColor = 'rgba(59, 130, 246, ' + (dotAlpha * 0.5) + ')';
+  } else if (bujoPrefs.theme === 'profit-green') {
+    dotColor = 'rgba(34, 197, 94, ' + (dotAlpha * 0.5) + ')';
   } else if (bujoPrefs.theme === 'cyberpunk') {
     dotColor = 'rgba(0, 242, 254, ' + dotAlpha + ')';
   } else if (bujoPrefs.theme === 'autumn') {
@@ -9119,7 +9506,10 @@ function rSettings() {
 }
 function selectTheme(themeId) {
   bujoPrefs.theme = themeId;
-  if (themeId === 'toota-clean') {
+  if (themeId.startsWith('profit-')) {
+    bujoPrefs.fontHeading = "'Plus Jakarta Sans', 'Space Grotesk', sans-serif";
+    bujoPrefs.fontBody = "'Plus Jakarta Sans', sans-serif";
+  } else if (themeId === 'toota-clean') {
     bujoPrefs.fontHeading = "'Plus Jakarta Sans', 'Outfit', sans-serif";
     bujoPrefs.fontBody = "'Plus Jakarta Sans', sans-serif";
   } else if (themeId === 'acid-lime') {
