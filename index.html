@@ -2196,6 +2196,210 @@ html[data-theme="nordic"] {
   --gradient-cool: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
 }
 
+/* ═══════════════════ TOOTA STUDIO MINIMAL THEME ═══════════════════ */
+html[data-theme="toota-clean"] {
+  /* Canvas & Surfaces */
+  --bg: #ECECEF;
+  --bg-secondary: #F4F5F7;
+  --bg-card: #FFFFFF;
+  --bg-card-solid: #FFFFFF;
+  --bg-glass: rgba(255, 255, 255, 0.9);
+  --bg-glass-hover: rgba(0, 0, 0, 0.03);
+  --bg-glass-active: rgba(0, 0, 0, 0.06);
+
+  /* Deep Matte Charcoal / Obsidian Sidebar */
+  --sidebar-bg: #121417;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+
+  /* Text Hierarchy */
+  --text-primary: #11141A;
+  --text-secondary: #5E6472;
+  --text-tertiary: #8E94A0;
+  --text-muted: #CBD0DC;
+
+  /* Signature Accents */
+  --accent: #11141A;
+  --accent-hover: #262B36;
+  --accent-glow: rgba(17, 20, 26, 0.12);
+  --accent-soft: rgba(17, 20, 26, 0.06);
+  --btn-primary-text: #FFFFFF;
+  --accent-contrast: #FFFFFF;
+
+  /* Fresh Studio Accents */
+  --accent2: #22C55E;
+  --accent2-soft: rgba(34, 197, 94, 0.12);
+  --green: #22C55E;
+  --green-soft: rgba(34, 197, 94, 0.12);
+  --orange: #F97316;
+  --orange-soft: rgba(249, 115, 22, 0.12);
+  --rose: #EF4444;
+  --rose-soft: rgba(239, 68, 68, 0.12);
+  --purple: #8B5CF6;
+  --purple-soft: rgba(139, 92, 246, 0.12);
+  --cyan: #06B6D4;
+  --cyan-soft: rgba(6, 182, 212, 0.12);
+
+  /* Highlights & Banner */
+  --terracotta-bg: #11141A;
+  --terracotta-text: #FFFFFF;
+  --terracotta-subtext: #22C55E;
+  --yellow-banner: #11141A;
+  --yellow-banner-text: #FFFFFF;
+
+  /* Elevation, Soft Borders & Radii */
+  --border: rgba(0, 0, 0, 0.07);
+  --border-light: rgba(0, 0, 0, 0.04);
+  --dot: rgba(17, 20, 26, 0.045);
+  --radius: 22px;
+  --radius-sm: 12px;
+  --radius-lg: 28px;
+  --radius-pill: 9999px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.035), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02);
+
+  /* Modern Studio Typography */
+  --font-heading: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Multi-Stop Gradients */
+  --gradient-primary: linear-gradient(135deg, #11141A 0%, #2A2E39 100%);
+  --gradient-warm: linear-gradient(90deg, #FF6B4A 0%, #FFB800 45%, #22C55E 100%);
+  --gradient-cool: linear-gradient(135deg, #22C55E 0%, #10B981 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(17,20,26,0.03) 0%, rgba(255,255,255,0.9) 100%);
+}
+
+/* Toota Specific Component Overrides */
+html[data-theme="toota-clean"] .sidebar .nav-item {
+  color: #8E929B;
+  border-radius: 9999px;
+  margin: 3px 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-theme="toota-clean"] .sidebar .nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+html[data-theme="toota-clean"] .sidebar .nav-item.active {
+  background: #FFFFFF !important;
+  color: #11141A !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16) !important;
+  font-weight: 700;
+}
+html[data-theme="toota-clean"] .sidebar .nav-item.active .nav-icon svg {
+  stroke: #11141A !important;
+}
+html[data-theme="toota-clean"] .sidebar .nav-item .nav-icon svg {
+  stroke: currentColor;
+}
+html[data-theme="toota-clean"] .sidebar .sidebar-logo {
+  color: #FFFFFF;
+}
+html[data-theme="toota-clean"] .sidebar .sidebar-logo-icon {
+  background: #FFFFFF;
+  color: #11141A;
+}
+
+html[data-theme="toota-clean"] .index-card,
+html[data-theme="toota-clean"] .db-card,
+html[data-theme="toota-clean"] .monthly-area-card,
+html[data-theme="toota-clean"] .weekly-area-card,
+html[data-theme="toota-clean"] .calendar-card,
+html[data-theme="toota-clean"] .settings-card,
+html[data-theme="toota-clean"] .note-card,
+html[data-theme="toota-clean"] .modal {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.035), 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+html[data-theme="toota-clean"] .btn-pill-yellow,
+html[data-theme="toota-clean"] .btn-pill-primary,
+html[data-theme="toota-clean"] .btn-primary {
+  background: #11141A !important;
+  color: #FFFFFF !important;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+html[data-theme="toota-clean"] .btn-pill-yellow:hover,
+html[data-theme="toota-clean"] .btn-pill-primary:hover,
+html[data-theme="toota-clean"] .btn-primary:hover {
+  background: #262B36 !important;
+  transform: translateY(-1px);
+}
+
+html[data-theme="toota-clean"] .db-progress-fill {
+  background: linear-gradient(90deg, #FF6B4A 0%, #FFB800 45%, #22C55E 100%);
+}
+
+html[data-theme="toota-clean"] .view-toggle-btn.active {
+  background: #11141A;
+  color: #FFFFFF;
+  border-radius: 9999px;
+}
+
+html[data-theme="toota-clean"] .entry-bullet.complete {
+  background: #22C55E;
+  color: #FFFFFF;
+  border-color: #22C55E;
+}
+html[data-theme="toota-clean"] .entry-bullet.goal {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16A34A;
+  border-color: rgba(34, 197, 94, 0.25);
+}
+html[data-theme="toota-clean"] .entry-bullet.goal.complete {
+  background: #22C55E;
+  color: #FFFFFF;
+  border-color: #22C55E;
+}
+html[data-theme="toota-clean"] .entry-priority,
+html[data-theme="toota-clean"] .we-pri {
+  color: #F59E0B;
+}
+
+html[data-theme="toota-clean"] .custom-type-trigger {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+html[data-theme="toota-clean"] .custom-type-menu {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+html[data-theme="toota-clean"] .custom-type-option:hover {
+  background: #F3F4F6;
+  color: #11141A;
+}
+html[data-theme="toota-clean"] .custom-type-option.selected {
+  background: #11141A;
+  color: #FFFFFF;
+}
+html[data-theme="toota-clean"] .custom-type-option.selected .cto-check {
+  color: #22C55E;
+}
+
+html[data-theme="toota-clean"] .daily-filter-chip.active,
+html[data-theme="toota-clean"] .monthly-filter-chip.active,
+html[data-theme="toota-clean"] .weekly-filter-chip.active {
+  background: #11141A;
+  color: #FFFFFF;
+  border-color: #11141A;
+}
+
+html[data-theme="toota-clean"] .db-stat-pill {
+  background: #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
+  font-weight: 600;
+  color: #5E6472;
+}
+
+html[data-theme="toota-clean"] .monthly-area-notes-box,
+html[data-theme="toota-clean"] .weekly-area-notes-box {
+  background: #F9FAFB;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 12px;
+}
+
 /* Settings Styles */
 .settings-grid {
   display: flex;
@@ -4166,6 +4370,7 @@ html, body {
       <div class="font-select-wrap">
         <label for="font-heading-sel">Headings</label>
         <select class="font-select" id="font-heading-sel" onchange="updateFontPref('heading', this.value)">
+          <option value="'Plus Jakarta Sans', 'Outfit', sans-serif">Plus Jakarta Sans (Studio Bold)</option>
           <option value="'Archivo Black', 'Syne', sans-serif">Archivo Black (Neo-Brutalist)</option>
           <option value="'Syne', sans-serif">Syne (Extended Display)</option>
           <option value="'Bebas Neue', cursive, sans-serif">Bebas Neue (ROSUI Display)</option>
@@ -8756,6 +8961,7 @@ let bujoPrefs = {
   gridOpacity: 10
 };
 const THEMES = [
+  { id: 'toota-clean', name: 'Toota Studio Minimal', colors: ['#ECECEF', '#FFFFFF', '#121417', '#22C55E'] },
   { id: 'acid-lime', name: 'Acid Lime & Neo-Brutalist', colors: ['#141414', '#1C1C1C', '#C5F82A', '#FFFFFF'] },
   { id: 'rosui-warm', name: 'Rosui Warm Cream & Terracotta', colors: ['#EFE8D5', '#FAF6EC', '#D65A54', '#F5B82E'] },
   { id: 'glass-dark', name: 'Glassmorphic Dark', colors: ['#0c0e14', '#161926', '#a78bfa', '#60a5fa'] },
@@ -8801,8 +9007,8 @@ function applyPrefs() {
   
   let dotAlpha = (bujoPrefs.gridOpacity !== undefined ? bujoPrefs.gridOpacity : 10) / 100;
   let dotColor = 'rgba(197, 248, 42, ' + dotAlpha + ')';
-  if (['minimal-light', 'classic-paper', 'rosui-warm'].includes(bujoPrefs.theme)) {
-    dotColor = 'rgba(34, 37, 42, ' + dotAlpha + ')';
+  if (['minimal-light', 'classic-paper', 'rosui-warm', 'toota-clean'].includes(bujoPrefs.theme)) {
+    dotColor = 'rgba(17, 20, 26, ' + (dotAlpha * 0.5) + ')';
     if (bujoPrefs.theme === 'classic-paper') {
       dotColor = 'rgba(46, 37, 28, ' + dotAlpha * 1.5 + ')';
     }
@@ -8839,7 +9045,10 @@ function rSettings() {
 }
 function selectTheme(themeId) {
   bujoPrefs.theme = themeId;
-  if (themeId === 'acid-lime') {
+  if (themeId === 'toota-clean') {
+    bujoPrefs.fontHeading = "'Plus Jakarta Sans', 'Outfit', sans-serif";
+    bujoPrefs.fontBody = "'Plus Jakarta Sans', sans-serif";
+  } else if (themeId === 'acid-lime') {
     bujoPrefs.fontHeading = "'Archivo Black', 'Syne', sans-serif";
     bujoPrefs.fontBody = "'Plus Jakarta Sans', sans-serif";
   } else if (themeId === 'rosui-warm') {
