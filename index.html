@@ -16,6 +16,15 @@
 <meta name="theme-color" content="#141414">
 <link rel="canonical" href="https://mhdv2nova-netizen.github.io/portfolio/">
 
+<!-- Favicons & App Icons -->
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="./favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="./favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./favicon-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./favicon-512x512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="shortcut icon" href="./favicon.ico">
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KINETIC">
@@ -81,7 +90,10 @@
       "@id": "https://mhdv2nova-netizen.github.io/portfolio/#kinetic-site",
       "url": "https://mhdv2nova-netizen.github.io/portfolio/",
       "name": "KINETIC",
-      "alternateName": "Kinetic Bullet Journal by Deep",
+      "alternateName": [
+        "Kinetic Bullet Journal",
+        "Kinetic by Deep"
+      ],
       "description": "KINETIC is Deep's personal digital bullet journal and execution hub.",
       "author": {
         "@type": "Person",
@@ -865,13 +877,17 @@ body{font-family:var(--body);background:var(--bg);color:var(--text-primary);disp
 
 /* Blockquotes, Divider, Code Blocks */
 .note-live-canvas blockquote, .nl-quote{
-  margin:12px 0;
-  padding:8px 16px;
+  margin:10px 0;
+  padding:10px 18px;
   border-left:4px solid var(--accent);
-  background:var(--bg-glass);
+  background:rgba(255,255,255,0.03);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
   color:var(--text-secondary);
   font-style:italic;
+  line-height:1.7;
+}
+.note-live-canvas blockquote:focus, .nl-quote:focus{
+  outline:none;
 }
 .note-live-canvas hr, .nl-hr{
   border:none;
@@ -2899,17 +2915,32 @@ html, body {
   border: 1px solid transparent;
   color: var(--text-secondary);
   border-radius: 4px;
-  padding: 4px 8px;
+  padding: 5px 9px;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: var(--body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 .nft-btn:hover {
   background: var(--bg-glass-hover);
   color: var(--text-primary);
   border-color: var(--border);
+}
+.nft-btn.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 800;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.nft-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .note-stats-badge {
   font-size: 0.72rem;
@@ -3335,26 +3366,26 @@ html, body {
 <div class="note-editor-wrap">
 <div class="note-editor-bar"><input class="note-title-inp" id="n-title" placeholder="Note title..."></div>
 <div class="note-format-toolbar" id="note-format-toolbar">
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('strike')" title="Strikethrough"><s>S</s></button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('h1')" title="Heading 1 (#)">H1</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('h2')" title="Heading 2 (##)">H2</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('h3')" title="Heading 3 (###)">H3</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('bullet')" title="Bullet List (-)">• List</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('task')" title="Checklist (- [ ])">☑ Task</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('number')" title="Numbered List (1.)">1. List</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('quote')" title="Quote (>)">” Quote</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('code')" title="Inline Code (`)">&lt;/&gt;</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('codeblock')" title="Code Block (```)">{ }</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('link')" title="Link ([...](...))">🔗</button>
-  <button type="button" class="nft-btn" onclick="applyNoteFormat('divider')" title="Divider Line (---)">—</button>
+  <button type="button" class="nft-btn" id="nft-bold" onclick="applyNoteFormat('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+  <button type="button" class="nft-btn" id="nft-italic" onclick="applyNoteFormat('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+  <button type="button" class="nft-btn" id="nft-strike" onclick="applyNoteFormat('strike')" title="Strikethrough (Ctrl+Shift+S)"><s>S</s></button>
+  <button type="button" class="nft-btn" id="nft-h1" onclick="applyNoteFormat('h1')" title="Heading 1 (# or Ctrl+Shift+1)">H1</button>
+  <button type="button" class="nft-btn" id="nft-h2" onclick="applyNoteFormat('h2')" title="Heading 2 (## or Ctrl+Shift+2)">H2</button>
+  <button type="button" class="nft-btn" id="nft-h3" onclick="applyNoteFormat('h3')" title="Heading 3 (### or Ctrl+Shift+3)">H3</button>
+  <button type="button" class="nft-btn" id="nft-bullet" onclick="applyNoteFormat('bullet')" title="Bullet List (- or Ctrl+Shift+8)">• List</button>
+  <button type="button" class="nft-btn" id="nft-task" onclick="applyNoteFormat('task')" title="Checklist (- [ ] or Ctrl+Shift+C)">☑ Task</button>
+  <button type="button" class="nft-btn" id="nft-number" onclick="applyNoteFormat('number')" title="Numbered List (1. or Ctrl+Shift+7)">1. List</button>
+  <button type="button" class="nft-btn" id="nft-quote" onclick="applyNoteFormat('quote')" title="Quote (> or Ctrl+Shift+9)">” Quote</button>
+  <button type="button" class="nft-btn" id="nft-code" onclick="applyNoteFormat('code')" title="Inline Code (` or Ctrl+E)">&lt;/&gt;</button>
+  <button type="button" class="nft-btn" id="nft-codeblock" onclick="applyNoteFormat('codeblock')" title="Code Block (```)">{ }</button>
+  <button type="button" class="nft-btn" id="nft-link" onclick="applyNoteFormat('link')" title="Link (Ctrl+K)">🔗</button>
+  <button type="button" class="nft-btn" id="nft-divider" onclick="applyNoteFormat('divider')" title="Divider Line (---)">—</button>
 </div>
 <div class="note-live-editor-wrap" id="n-live-wrap" onclick="focusLiveEditorCanvas(event)">
   <div class="note-live-canvas" id="n-live-editor" contenteditable="true" spellcheck="true" placeholder="Start typing... Type # for heading, - [ ] for task, - for bullet, > for quote..."></div>
 </div>
 <textarea id="n-content" class="note-source-textarea" style="display:none" placeholder="Markdown source code..." oninput="updateNoteStats()"></textarea>
-<div class="note-hint" id="n-hint"><b>◈ Live Preview Mode:</b> Type <code>#</code>, <code>##</code>, <code>- [ ]</code>, <code>-</code>, <code>&gt;</code>, or <code>---</code> and press <b>Enter</b> to format in-place. Click any checkbox to check/uncheck.</div>
+<div class="note-hint" id="n-hint"><b>◈ Live Preview Mode:</b> Type <code>#</code>, <code>##</code>, <code>- [ ]</code>, <code>-</code>, <code>&gt;</code>, or <code>---</code> + <b>Space</b>/<b>Enter</b> to format. Tap format button again to toggle back to normal text. Click checkboxes to check/uncheck.</div>
 </div></div></div>
 
 <!-- SETTINGS -->
@@ -5046,6 +5077,7 @@ function openN(id){
   setNoteEditorMode('live');
   updateNoteStats();
   initLiveEditorEventsOnce();
+  updateNoteToolbarState();
 }
 
 function saveCloseN(){
@@ -5126,6 +5158,7 @@ function setNoteEditorMode(mode){
     if (canvas) canvas.focus();
   }
   updateNoteStats();
+  updateNoteToolbarState();
 }
 
 function getNoteCurrentMarkdown() {
@@ -5159,7 +5192,7 @@ function saveCurrentNoteLive() {
 
 // Markdown to Live Preview HTML converter
 function markdownToHtml(md) {
-  if (!md || !md.trim()) return '<p><br></p>';
+  if (!md || !md.trim()) return '<p class="nl-p"><br></p>';
   const lines = md.split('\n');
   let html = '';
   let inCodeBlock = false;
@@ -5187,7 +5220,7 @@ function markdownToHtml(md) {
     }
 
     if (!line) {
-      html += '<p><br></p>';
+      html += '<p class="nl-p"><br></p>';
       continue;
     }
 
@@ -5197,8 +5230,16 @@ function markdownToHtml(md) {
       html += `<h2 class="nl-h2">${inlineLiveFormat(line.slice(3))}</h2>`;
     } else if (line.startsWith('### ')) {
       html += `<h3 class="nl-h3">${inlineLiveFormat(line.slice(4))}</h3>`;
-    } else if (line.startsWith('> ')) {
-      html += `<blockquote class="nl-quote">${inlineLiveFormat(line.slice(2))}</blockquote>`;
+    } else if (line.startsWith('> ') || line === '>' || line.startsWith('>')) {
+      const quoteLines = [];
+      while (i < lines.length && (lines[i].trim().startsWith('>') || lines[i].trim() === '>')) {
+        const ql = lines[i].trim();
+        const qText = ql.startsWith('> ') ? ql.slice(2) : (ql.startsWith('>') ? ql.slice(1).trim() : '');
+        quoteLines.push(inlineLiveFormat(qText) || '<br>');
+        i++;
+      }
+      i--;
+      html += `<blockquote class="nl-quote">${quoteLines.join('<br>')}</blockquote>`;
     } else if (/^([-*+]\s+)?\[([ xX])\]\s*(.*)/.test(line)) {
       const match = line.match(/^([-*+]\s+)?\[([ xX])\]\s*(.*)/);
       const isChecked = match[2].toLowerCase() === 'x';
@@ -5257,7 +5298,7 @@ function getNoteMarkdownFromCanvas() {
   const canvas = document.getElementById('n-live-editor');
   if (!canvas) return '';
   const lines = [];
-  const children = canvas.childNodes;
+  const children = canvas.childNodes || [];
 
   for (let i = 0; i < children.length; i++) {
     const node = children[i];
@@ -5278,7 +5319,11 @@ function getNoteMarkdownFromCanvas() {
     } else if (tag === 'h3') {
       lines.push('### ' + text.trim());
     } else if (tag === 'blockquote') {
-      lines.push('> ' + text.trim());
+      const bqInner = extractInlineMarkdown(node);
+      const bqLines = bqInner.split('\n');
+      bqLines.forEach(l => {
+        lines.push('> ' + l.trim());
+      });
     } else if (tag === 'hr') {
       lines.push('---');
     } else if (tag === 'pre') {
@@ -5337,7 +5382,9 @@ function extractInlineMarkdown(el) {
         const href = child.getAttribute('href') || '';
         res += `[${inner}](${href})`;
       } else if (tag === 'br') {
-        // newline
+        res += '\n';
+      } else if (tag === 'p' || tag === 'div') {
+        res += (res.length && !res.endsWith('\n') ? '\n' : '') + inner;
       } else {
         res += inner;
       }
@@ -5357,7 +5404,7 @@ function focusLiveEditorCanvas(e) {
   if (!canvas) return;
   if (e.target === canvas || e.target.id === 'n-live-wrap') {
     if (!canvas.childNodes.length || (canvas.childNodes.length === 1 && canvas.childNodes[0].nodeType === 3 && !canvas.childNodes[0].textContent.trim())) {
-      canvas.innerHTML = '<p><br></p>';
+      canvas.innerHTML = '<p class="nl-p"><br></p>';
     }
     const last = canvas.lastChild;
     placeCaretAtEnd(last);
@@ -5384,6 +5431,161 @@ function placeCaretInElement(el) {
   sel.addRange(range);
 }
 
+// Block finding & conversion helpers for Live Preview
+function getLiveBlockAtSelection() {
+  const canvas = document.getElementById('n-live-editor');
+  if (!canvas) return null;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  let node = sel.anchorNode;
+  if (!node) return null;
+  if (node === canvas) {
+    if (!canvas.children.length) {
+      canvas.innerHTML = '<p class="nl-p"><br></p>';
+    }
+    return canvas.firstElementChild;
+  }
+  let block = node;
+  while (block && block.parentNode !== canvas) {
+    if (block === canvas || !block.parentNode) break;
+    block = block.parentNode;
+  }
+  if (!block || block === canvas) return null;
+  return block;
+}
+
+function getBlockType(el) {
+  if (!el) return 'paragraph';
+  const tag = el.tagName ? el.tagName.toLowerCase() : '';
+  if (tag === 'blockquote' || el.classList?.contains('nl-quote')) return 'quote';
+  if (tag === 'h1' || el.classList?.contains('nl-h1')) return 'h1';
+  if (tag === 'h2' || el.classList?.contains('nl-h2')) return 'h2';
+  if (tag === 'h3' || el.classList?.contains('nl-h3')) return 'h3';
+  if (el.classList?.contains('nl-task-item')) return 'task';
+  if (el.classList?.contains('nl-bullet-item')) return 'bullet';
+  if (el.classList?.contains('nl-num-item')) return 'number';
+  if (tag === 'pre' || el.classList?.contains('nl-code-block')) return 'codeblock';
+  if (tag === 'hr' || el.classList?.contains('nl-hr')) return 'divider';
+  return 'paragraph';
+}
+
+function extractBlockContentHtml(el) {
+  if (!el) return '';
+  if (el.nodeType === 3) return esc(el.textContent);
+  if (el.classList?.contains('nl-task-item')) {
+    const span = el.querySelector('.nl-task-text');
+    return span ? span.innerHTML : el.innerHTML;
+  }
+  if (el.classList?.contains('nl-bullet-item')) {
+    const span = el.querySelector('.nl-bullet-text');
+    return span ? span.innerHTML : el.innerHTML;
+  }
+  if (el.classList?.contains('nl-num-item')) {
+    const span = el.querySelector('.nl-num-text');
+    return span ? span.innerHTML : el.innerHTML;
+  }
+  if (el.tagName?.toLowerCase() === 'pre') {
+    const code = el.querySelector('code');
+    return code ? code.innerHTML : el.innerHTML;
+  }
+  return el.innerHTML;
+}
+
+function convertLiveBlock(block, targetType) {
+  const canvas = document.getElementById('n-live-editor');
+  if (!canvas || !block) return;
+  let innerHtml = extractBlockContentHtml(block).trim();
+  if (innerHtml === '<br>' || innerHtml === '') innerHtml = '';
+
+  let newEl;
+  if (targetType === 'quote') {
+    newEl = document.createElement('blockquote');
+    newEl.className = 'nl-quote';
+    newEl.innerHTML = innerHtml || '<br>';
+  } else if (targetType === 'h1') {
+    newEl = document.createElement('h1');
+    newEl.className = 'nl-h1';
+    newEl.innerHTML = innerHtml || '<br>';
+  } else if (targetType === 'h2') {
+    newEl = document.createElement('h2');
+    newEl.className = 'nl-h2';
+    newEl.innerHTML = innerHtml || '<br>';
+  } else if (targetType === 'h3') {
+    newEl = document.createElement('h3');
+    newEl.className = 'nl-h3';
+    newEl.innerHTML = innerHtml || '<br>';
+  } else if (targetType === 'task') {
+    newEl = document.createElement('div');
+    newEl.className = 'nl-task-item';
+    newEl.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text">${innerHtml || '<br>'}</span>`;
+  } else if (targetType === 'bullet') {
+    newEl = document.createElement('div');
+    newEl.className = 'nl-bullet-item';
+    newEl.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text">${innerHtml || '<br>'}</span>`;
+  } else if (targetType === 'number') {
+    newEl = document.createElement('div');
+    newEl.className = 'nl-num-item';
+    newEl.innerHTML = `<span class="nl-num-marker">1.</span><span class="nl-num-text">${innerHtml || '<br>'}</span>`;
+  } else if (targetType === 'codeblock') {
+    newEl = document.createElement('pre');
+    newEl.className = 'nl-code-block';
+    newEl.innerHTML = `<code>${innerHtml ? (block.textContent || '').trim() : '// Code block'}</code>`;
+  } else {
+    // Default to paragraph
+    newEl = document.createElement('p');
+    newEl.className = 'nl-p';
+    newEl.innerHTML = innerHtml || '<br>';
+  }
+
+  if (block.parentNode === canvas) {
+    canvas.replaceChild(newEl, block);
+  } else if (block.parentNode) {
+    block.parentNode.replaceChild(newEl, block);
+  }
+
+  const textTarget = newEl.querySelector('.nl-task-text, .nl-bullet-text, .nl-num-text, code') || newEl;
+  placeCaretAtEnd(textTarget);
+  saveCurrentNoteLive();
+  updateNoteStats();
+  updateNoteToolbarState();
+  return newEl;
+}
+
+// Live Toolbar Button Highlight State
+function updateNoteToolbarState() {
+  const types = ['bold', 'italic', 'strike', 'h1', 'h2', 'h3', 'bullet', 'task', 'number', 'quote', 'code', 'codeblock'];
+  types.forEach(t => {
+    const btn = document.getElementById(`nft-${t}`);
+    if (btn) btn.classList.remove('active');
+  });
+
+  if (noteEditorMode === 'source') return;
+
+  const canvas = document.getElementById('n-live-editor');
+  if (!canvas) return;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+
+  const block = getLiveBlockAtSelection();
+  if (block) {
+    const bType = getBlockType(block);
+    const btn = document.getElementById(`nft-${bType}`);
+    if (btn) btn.classList.add('active');
+  }
+
+  let node = sel.anchorNode;
+  while (node && node !== canvas) {
+    if (node.nodeType === 1) {
+      const tag = node.tagName.toLowerCase();
+      if (tag === 'b' || tag === 'strong') document.getElementById('nft-bold')?.classList.add('active');
+      if (tag === 'i' || tag === 'em') document.getElementById('nft-italic')?.classList.add('active');
+      if (tag === 's' || tag === 'del' || tag === 'strike') document.getElementById('nft-strike')?.classList.add('active');
+      if (tag === 'code' && node.parentNode?.tagName?.toLowerCase() !== 'pre') document.getElementById('nft-code')?.classList.add('active');
+    }
+    node = node.parentNode;
+  }
+}
+
 let liveEditorEventsInitialized = false;
 function initLiveEditorEventsOnce() {
   if (liveEditorEventsInitialized) return;
@@ -5392,7 +5594,6 @@ function initLiveEditorEventsOnce() {
   const canvas = document.getElementById('n-live-editor');
   if (!canvas) return;
 
-  // Checkbox toggle handler
   function toggleCheckboxFromEvent(e) {
     if (e.target && e.target.classList && e.target.classList.contains('nl-task-checkbox')) {
       const taskItem = e.target.closest('.nl-task-item');
@@ -5407,245 +5608,329 @@ function initLiveEditorEventsOnce() {
   canvas.addEventListener('click', toggleCheckboxFromEvent);
   canvas.addEventListener('change', toggleCheckboxFromEvent);
 
-  // Input event: auto-save & update stats
   canvas.addEventListener('input', () => {
     saveCurrentNoteLive();
     updateNoteStats();
+    updateNoteToolbarState();
   });
 
-  // Keydown: Obsidian-style live triggers (#, ##, - [ ], -, 1., >, ---) on Enter
+  canvas.addEventListener('mouseup', updateNoteToolbarState);
+  canvas.addEventListener('keyup', updateNoteToolbarState);
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === canvas || canvas.contains(document.activeElement)) {
+      updateNoteToolbarState();
+    }
+  });
+
   canvas.addEventListener('keydown', e => {
+    // Keyboard Shortcuts (Obsidian & Notion style)
+    const isMod = e.ctrlKey || e.metaKey;
+    if (isMod) {
+      const keyLower = e.key.toLowerCase();
+      if (keyLower === 'b' && !e.shiftKey) { e.preventDefault(); applyNoteFormat('bold'); return; }
+      if (keyLower === 'i' && !e.shiftKey) { e.preventDefault(); applyNoteFormat('italic'); return; }
+      if ((keyLower === 's' && e.shiftKey) || (keyLower === 'x' && e.shiftKey)) { e.preventDefault(); applyNoteFormat('strike'); return; }
+      if (keyLower === 'e' && !e.shiftKey) { e.preventDefault(); applyNoteFormat('code'); return; }
+      if (keyLower === 'k' && !e.shiftKey) { e.preventDefault(); applyNoteFormat('link'); return; }
+      if (keyLower === 's' && !e.shiftKey) {
+        e.preventDefault();
+        saveCurrentNoteLive();
+        showToast('💾 Note saved!');
+        return;
+      }
+      if ((keyLower === '1' && e.shiftKey) || (keyLower === '1' && e.altKey)) { e.preventDefault(); applyNoteFormat('h1'); return; }
+      if ((keyLower === '2' && e.shiftKey) || (keyLower === '2' && e.altKey)) { e.preventDefault(); applyNoteFormat('h2'); return; }
+      if ((keyLower === '3' && e.shiftKey) || (keyLower === '3' && e.altKey)) { e.preventDefault(); applyNoteFormat('h3'); return; }
+      if ((keyLower === '9' && e.shiftKey) || (keyLower === 'q' && e.shiftKey) || (e.key === '>' && e.shiftKey)) { e.preventDefault(); applyNoteFormat('quote'); return; }
+      if ((keyLower === '8' && e.shiftKey) || (keyLower === 'l' && e.shiftKey)) { e.preventDefault(); applyNoteFormat('bullet'); return; }
+      if ((keyLower === '7' && e.shiftKey) || (keyLower === 'o' && e.shiftKey)) { e.preventDefault(); applyNoteFormat('number'); return; }
+      if ((keyLower === 'c' && e.shiftKey) || (keyLower === 'c' && e.altKey)) { e.preventDefault(); applyNoteFormat('task'); return; }
+    }
+
+    // Tab & Shift+Tab handling
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const block = getLiveBlockAtSelection();
+      if (block) {
+        if (block.classList.contains('nl-task-item') || block.classList.contains('nl-bullet-item') || block.classList.contains('nl-num-item')) {
+          const curMargin = parseInt(block.style.marginLeft || '0', 10);
+          if (e.shiftKey) {
+            block.style.marginLeft = Math.max(0, curMargin - 24) + 'px';
+          } else {
+            block.style.marginLeft = Math.min(96, curMargin + 24) + 'px';
+          }
+          saveCurrentNoteLive();
+          return;
+        }
+      }
+      document.execCommand('insertText', false, '  ');
+      return;
+    }
+
+    // Space key: Notion/Obsidian Markdown live triggers (# , ## , ### , > , - , * , 1. , - [ ] , [] , ---)
+    if (e.key === ' ' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount && sel.isCollapsed) {
+        const block = getLiveBlockAtSelection();
+        if (block && (block.tagName === 'P' || (block.tagName === 'DIV' && getBlockType(block) === 'paragraph') || !block.tagName)) {
+          const rawText = (block.textContent || '').replace(/\u00a0/g, ' ');
+          let triggerType = null;
+
+          if (rawText === '#') triggerType = 'h1';
+          else if (rawText === '##') triggerType = 'h2';
+          else if (rawText === '###') triggerType = 'h3';
+          else if (rawText === '>' || rawText === '> ') triggerType = 'quote';
+          else if (rawText === '-' || rawText === '*' || rawText === '+') triggerType = 'bullet';
+          else if (/^\d+\.$/.test(rawText)) triggerType = 'number';
+          else if (rawText === '[]' || rawText === '[ ]' || rawText === '- []' || rawText === '- [ ]') triggerType = 'task';
+
+          if (triggerType) {
+            e.preventDefault();
+            // Clear the trigger prefix text so it doesn't appear as content in the new block
+            block.innerHTML = '<br>';
+            convertLiveBlock(block, triggerType);
+            return;
+          }
+        }
+      }
+    }
+
+    // Enter key handling
     if (e.key === 'Enter' && !e.shiftKey) {
       const sel = window.getSelection();
       if (!sel || !sel.rangeCount) return;
 
-      // Find top block under canvas and check for enclosing task item
-      let block = sel.anchorNode;
-      let taskItem = null, bulletItem = null, numItem = null;
+      const block = getLiveBlockAtSelection();
+      if (!block) return;
 
-      while (block && block.parentNode !== canvas) {
-        if (block === canvas) break;
-        if (block.classList && block.classList.contains('nl-task-item')) taskItem = block;
-        if (block.classList && block.classList.contains('nl-bullet-item')) bulletItem = block;
-        if (block.classList && block.classList.contains('nl-num-item')) numItem = block;
-        block = block.parentNode;
-      }
-      if (!block || block === canvas) return;
-
-      if (block.classList && block.classList.contains('nl-task-item')) taskItem = block;
-      if (block.classList && block.classList.contains('nl-bullet-item')) bulletItem = block;
-      if (block.classList && block.classList.contains('nl-num-item')) numItem = block;
-
+      const bType = getBlockType(block);
       const rawText = block.textContent || '';
       const text = rawText.trim();
 
-      // Heading 1 (# ...)
-      if (text.startsWith('# ') || block.tagName === 'H1') {
-        if (text.startsWith('# ')) {
+      // Heading 1, 2, 3: Create next paragraph after heading
+      if (bType === 'h1' || bType === 'h2' || bType === 'h3' || text.startsWith('# ') || text.startsWith('## ') || text.startsWith('### ')) {
+        if (text.startsWith('# ') && bType !== 'h1') {
           e.preventDefault();
-          const headingText = text.slice(2);
-          const h1 = document.createElement('h1');
-          h1.className = 'nl-h1';
-          h1.innerHTML = inlineLiveFormat(headingText) || '<br>';
+          const h1 = convertLiveBlock(block, 'h1');
+          h1.innerHTML = inlineLiveFormat(text.slice(2)) || '<br>';
           const nextP = document.createElement('p');
           nextP.className = 'nl-p';
           nextP.innerHTML = '<br>';
-          block.parentNode.replaceChild(h1, block);
           h1.after(nextP);
           placeCaretInElement(nextP);
           saveCurrentNoteLive();
           updateNoteStats();
           return;
         }
-      }
-
-      // Heading 2 (## ...)
-      if (text.startsWith('## ') || block.tagName === 'H2') {
-        if (text.startsWith('## ')) {
+        if (text.startsWith('## ') && bType !== 'h2') {
           e.preventDefault();
-          const headingText = text.slice(3);
-          const h2 = document.createElement('h2');
-          h2.className = 'nl-h2';
-          h2.innerHTML = inlineLiveFormat(headingText) || '<br>';
+          const h2 = convertLiveBlock(block, 'h2');
+          h2.innerHTML = inlineLiveFormat(text.slice(3)) || '<br>';
           const nextP = document.createElement('p');
           nextP.className = 'nl-p';
           nextP.innerHTML = '<br>';
-          block.parentNode.replaceChild(h2, block);
           h2.after(nextP);
           placeCaretInElement(nextP);
           saveCurrentNoteLive();
           updateNoteStats();
           return;
         }
-      }
-
-      // Heading 3 (### ...)
-      if (text.startsWith('### ') || block.tagName === 'H3') {
-        if (text.startsWith('### ')) {
+        if (text.startsWith('### ') && bType !== 'h3') {
           e.preventDefault();
-          const headingText = text.slice(4);
-          const h3 = document.createElement('h3');
-          h3.className = 'nl-h3';
-          h3.innerHTML = inlineLiveFormat(headingText) || '<br>';
+          const h3 = convertLiveBlock(block, 'h3');
+          h3.innerHTML = inlineLiveFormat(text.slice(4)) || '<br>';
           const nextP = document.createElement('p');
           nextP.className = 'nl-p';
           nextP.innerHTML = '<br>';
-          block.parentNode.replaceChild(h3, block);
           h3.after(nextP);
           placeCaretInElement(nextP);
           saveCurrentNoteLive();
           updateNoteStats();
           return;
         }
-      }
 
-      // Task Checklist: Typing task trigger (- [ ] or [ ]) or pressing Enter inside an active task
-      if (/^([-*+]\s+)?\[([ xX])\]\s*(.*)/.test(text) || taskItem) {
         e.preventDefault();
-        if (/^([-*+]\s+)?\[([ xX])\]\s*(.*)/.test(text)) {
-          const match = text.match(/^([-*+]\s+)?\[([ xX])\]\s*(.*)/);
-          const isChecked = match[2].toLowerCase() === 'x';
-          const content = match[3];
-          const taskDiv = document.createElement('div');
-          taskDiv.className = `nl-task-item${isChecked ? ' checked' : ''}`;
-          taskDiv.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false" ${isChecked ? 'checked' : ''}><span class="nl-task-text">${inlineLiveFormat(content) || '<br>'}</span>`;
-          
-          const nextTask = document.createElement('div');
-          nextTask.className = 'nl-task-item';
-          nextTask.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text"><br></span>`;
-          
-          block.parentNode.replaceChild(taskDiv, block);
-          taskDiv.after(nextTask);
-          placeCaretInElement(nextTask.querySelector('.nl-task-text'));
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        } else if (taskItem) {
-          const taskSpan = taskItem.querySelector('.nl-task-text') || taskItem;
-          const taskVal = taskSpan ? taskSpan.textContent.trim() : '';
-          if (!taskVal) {
-            // Exit task checklist on empty Enter
-            const p = document.createElement('p');
-            p.className = 'nl-p';
-            p.innerHTML = '<br>';
-            taskItem.parentNode.replaceChild(p, taskItem);
-            placeCaretInElement(p);
-          } else {
-            const nextTask = document.createElement('div');
-            nextTask.className = 'nl-task-item';
-            nextTask.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text"><br></span>`;
-            taskItem.after(nextTask);
-            placeCaretInElement(nextTask.querySelector('.nl-task-text'));
-          }
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        }
+        const nextP = document.createElement('p');
+        nextP.className = 'nl-p';
+        nextP.innerHTML = '<br>';
+        block.after(nextP);
+        placeCaretInElement(nextP);
+        saveCurrentNoteLive();
+        updateNoteStats();
+        updateNoteToolbarState();
+        return;
       }
 
-      // Bullet List (- ... or in existing bullet item)
-      if (/^[-*+]\s+(.*)/.test(text) || bulletItem) {
+      // Blockquote: Exit quote on empty line, or continue quote / newline on non-empty
+      if (bType === 'quote' || text.startsWith('> ')) {
         e.preventDefault();
-        if (/^[-*+]\s+(.*)/.test(text)) {
-          const match = text.match(/^[-*+]\s+(.*)/);
-          const bulletDiv = document.createElement('div');
-          bulletDiv.className = 'nl-bullet-item';
-          bulletDiv.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text">${inlineLiveFormat(match[1]) || '<br>'}</span>`;
-          
-          const nextBullet = document.createElement('div');
-          nextBullet.className = 'nl-bullet-item';
-          nextBullet.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text"><br></span>`;
-          
-          block.parentNode.replaceChild(bulletDiv, block);
-          bulletDiv.after(nextBullet);
-          placeCaretInElement(nextBullet.querySelector('.nl-bullet-text'));
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        } else if (bulletItem) {
-          const bulletSpan = bulletItem.querySelector('.nl-bullet-text') || bulletItem;
-          const bulletVal = bulletSpan ? bulletSpan.textContent.trim() : '';
-          if (!bulletVal) {
-            // Exit bullet list
-            const p = document.createElement('p');
-            p.className = 'nl-p';
-            p.innerHTML = '<br>';
-            bulletItem.parentNode.replaceChild(p, bulletItem);
-            placeCaretInElement(p);
-          } else {
-            const nextBullet = document.createElement('div');
-            nextBullet.className = 'nl-bullet-item';
-            nextBullet.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text"><br></span>`;
-            bulletItem.after(nextBullet);
-            placeCaretInElement(nextBullet.querySelector('.nl-bullet-text'));
-          }
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        }
-      }
-
-      // Numbered List (1. ... or in existing numbered item)
-      if (/^(\d+)\.\s+(.*)/.test(text) || numItem) {
-        e.preventDefault();
-        if (/^(\d+)\.\s+(.*)/.test(text)) {
-          const match = text.match(/^(\d+)\.\s+(.*)/);
-          const curNum = parseInt(match[1]);
-          const numDiv = document.createElement('div');
-          numDiv.className = 'nl-num-item';
-          numDiv.innerHTML = `<span class="nl-num-marker">${curNum}.</span><span class="nl-num-text">${inlineLiveFormat(match[2]) || '<br>'}</span>`;
-          
-          const nextNum = document.createElement('div');
-          nextNum.className = 'nl-num-item';
-          nextNum.innerHTML = `<span class="nl-num-marker">${curNum + 1}.</span><span class="nl-num-text"><br></span>`;
-          
-          block.parentNode.replaceChild(numDiv, block);
-          numDiv.after(nextNum);
-          placeCaretInElement(nextNum.querySelector('.nl-num-text'));
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        } else if (numItem) {
-          const numSpan = numItem.querySelector('.nl-num-text') || numItem;
-          const numVal = numSpan ? numSpan.textContent.trim() : '';
-          const curNum = parseInt(numItem.querySelector('.nl-num-marker')?.textContent || '1');
-          if (!numVal) {
-            const p = document.createElement('p');
-            p.className = 'nl-p';
-            p.innerHTML = '<br>';
-            numItem.parentNode.replaceChild(p, numItem);
-            placeCaretInElement(p);
-          } else {
-            const nextNum = document.createElement('div');
-            nextNum.className = 'nl-num-item';
-            nextNum.innerHTML = `<span class="nl-num-marker">${curNum + 1}.</span><span class="nl-num-text"><br></span>`;
-            numItem.after(nextNum);
-            placeCaretInElement(nextNum.querySelector('.nl-num-text'));
-          }
-          saveCurrentNoteLive();
-          updateNoteStats();
-          return;
-        }
-      }
-
-      // Blockquote (> ...)
-      if (text.startsWith('> ') || block.tagName === 'BLOCKQUOTE') {
-        if (text.startsWith('> ')) {
-          e.preventDefault();
-          const qText = text.slice(2);
-          const bq = document.createElement('blockquote');
-          bq.className = 'nl-quote';
-          bq.innerHTML = inlineLiveFormat(qText) || '<br>';
+        if (text.startsWith('> ') && bType !== 'quote') {
+          const bq = convertLiveBlock(block, 'quote');
+          bq.innerHTML = inlineLiveFormat(text.slice(2)) || '<br>';
           const nextP = document.createElement('p');
           nextP.className = 'nl-p';
           nextP.innerHTML = '<br>';
-          block.parentNode.replaceChild(bq, block);
           bq.after(nextP);
           placeCaretInElement(nextP);
           saveCurrentNoteLive();
           updateNoteStats();
           return;
         }
+
+        if (!text) {
+          // Empty quote line -> Exit blockquote to normal paragraph
+          const p = document.createElement('p');
+          p.className = 'nl-p';
+          p.innerHTML = '<br>';
+          block.parentNode.replaceChild(p, block);
+          placeCaretInElement(p);
+        } else {
+          // Inside non-empty quote: create next paragraph after quote
+          const nextP = document.createElement('p');
+          nextP.className = 'nl-p';
+          nextP.innerHTML = '<br>';
+          block.after(nextP);
+          placeCaretInElement(nextP);
+        }
+        saveCurrentNoteLive();
+        updateNoteStats();
+        updateNoteToolbarState();
+        return;
+      }
+
+      // Task Checklist
+      if (bType === 'task' || /^([-*+]\s+)?\[([ xX])\]\s*(.*)/.test(text)) {
+        e.preventDefault();
+        if (/^([-*+]\s+)?\[([ xX])\]\s*(.*)/.test(text) && bType !== 'task') {
+          const match = text.match(/^([-*+]\s+)?\[([ xX])\]\s*(.*)/);
+          const isChecked = match[2].toLowerCase() === 'x';
+          const content = match[3];
+          const taskDiv = document.createElement('div');
+          taskDiv.className = `nl-task-item${isChecked ? ' checked' : ''}`;
+          taskDiv.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false" ${isChecked ? 'checked' : ''}><span class="nl-task-text">${inlineLiveFormat(content) || '<br>'}</span>`;
+          const nextTask = document.createElement('div');
+          nextTask.className = 'nl-task-item';
+          nextTask.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text"><br></span>`;
+          block.parentNode.replaceChild(taskDiv, block);
+          taskDiv.after(nextTask);
+          placeCaretInElement(nextTask.querySelector('.nl-task-text'));
+          saveCurrentNoteLive();
+          updateNoteStats();
+          return;
+        }
+
+        const taskSpan = block.querySelector('.nl-task-text') || block;
+        const taskVal = (taskSpan.textContent || '').trim();
+        if (!taskVal) {
+          const p = document.createElement('p');
+          p.className = 'nl-p';
+          p.innerHTML = '<br>';
+          block.parentNode.replaceChild(p, block);
+          placeCaretInElement(p);
+        } else {
+          const nextTask = document.createElement('div');
+          nextTask.className = 'nl-task-item';
+          nextTask.style.marginLeft = block.style.marginLeft || '';
+          nextTask.innerHTML = `<input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text"><br></span>`;
+          block.after(nextTask);
+          placeCaretInElement(nextTask.querySelector('.nl-task-text'));
+        }
+        saveCurrentNoteLive();
+        updateNoteStats();
+        updateNoteToolbarState();
+        return;
+      }
+
+      // Bullet List
+      if (bType === 'bullet' || /^[-*+]\s+(.*)/.test(text)) {
+        e.preventDefault();
+        if (/^[-*+]\s+(.*)/.test(text) && bType !== 'bullet') {
+          const match = text.match(/^[-*+]\s+(.*)/);
+          const bulletDiv = document.createElement('div');
+          bulletDiv.className = 'nl-bullet-item';
+          bulletDiv.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text">${inlineLiveFormat(match[1]) || '<br>'}</span>`;
+          const nextBullet = document.createElement('div');
+          nextBullet.className = 'nl-bullet-item';
+          nextBullet.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text"><br></span>`;
+          block.parentNode.replaceChild(bulletDiv, block);
+          bulletDiv.after(nextBullet);
+          placeCaretInElement(nextBullet.querySelector('.nl-bullet-text'));
+          saveCurrentNoteLive();
+          updateNoteStats();
+          return;
+        }
+
+        const bulletSpan = block.querySelector('.nl-bullet-text') || block;
+        const bulletVal = (bulletSpan.textContent || '').trim();
+        if (!bulletVal) {
+          const p = document.createElement('p');
+          p.className = 'nl-p';
+          p.innerHTML = '<br>';
+          block.parentNode.replaceChild(p, block);
+          placeCaretInElement(p);
+        } else {
+          const nextBullet = document.createElement('div');
+          nextBullet.className = 'nl-bullet-item';
+          nextBullet.style.marginLeft = block.style.marginLeft || '';
+          nextBullet.innerHTML = `<span class="nl-bullet-marker">•</span><span class="nl-bullet-text"><br></span>`;
+          block.after(nextBullet);
+          placeCaretInElement(nextBullet.querySelector('.nl-bullet-text'));
+        }
+        saveCurrentNoteLive();
+        updateNoteStats();
+        updateNoteToolbarState();
+        return;
+      }
+
+      // Numbered List
+      if (bType === 'number' || /^(\d+)\.\s+(.*)/.test(text)) {
+        e.preventDefault();
+        if (/^(\d+)\.\s+(.*)/.test(text) && bType !== 'number') {
+          const match = text.match(/^(\d+)\.\s+(.*)/);
+          const curNum = parseInt(match[1], 10);
+          const numDiv = document.createElement('div');
+          numDiv.className = 'nl-num-item';
+          numDiv.innerHTML = `<span class="nl-num-marker">${curNum}.</span><span class="nl-num-text">${inlineLiveFormat(match[2]) || '<br>'}</span>`;
+          const nextNum = document.createElement('div');
+          nextNum.className = 'nl-num-item';
+          nextNum.innerHTML = `<span class="nl-num-marker">${curNum + 1}.</span><span class="nl-num-text"><br></span>`;
+          block.parentNode.replaceChild(numDiv, block);
+          numDiv.after(nextNum);
+          placeCaretInElement(nextNum.querySelector('.nl-num-text'));
+          saveCurrentNoteLive();
+          updateNoteStats();
+          return;
+        }
+
+        const numSpan = block.querySelector('.nl-num-text') || block;
+        const numVal = (numSpan.textContent || '').trim();
+        const curNum = parseInt(block.querySelector('.nl-num-marker')?.textContent || '1', 10);
+        if (!numVal) {
+          const p = document.createElement('p');
+          p.className = 'nl-p';
+          p.innerHTML = '<br>';
+          block.parentNode.replaceChild(p, block);
+          placeCaretInElement(p);
+        } else {
+          const nextNum = document.createElement('div');
+          nextNum.className = 'nl-num-item';
+          nextNum.style.marginLeft = block.style.marginLeft || '';
+          nextNum.innerHTML = `<span class="nl-num-marker">${curNum + 1}.</span><span class="nl-num-text"><br></span>`;
+          block.after(nextNum);
+          placeCaretInElement(nextNum.querySelector('.nl-num-text'));
+        }
+        saveCurrentNoteLive();
+        updateNoteStats();
+        updateNoteToolbarState();
+        return;
+      }
+
+      // Code Block
+      if (bType === 'codeblock') {
+        e.preventDefault();
+        document.execCommand('insertText', false, '\n');
+        saveCurrentNoteLive();
+        return;
       }
 
       // Divider (--- or ***)
@@ -5661,57 +5946,41 @@ function initLiveEditorEventsOnce() {
         placeCaretInElement(nextP);
         saveCurrentNoteLive();
         updateNoteStats();
+        updateNoteToolbarState();
         return;
       }
     }
 
-    // Backspace handling on empty special blocks
+    // Backspace key: Revert block format at offset 0 or clean up empty blocks
     if (e.key === 'Backspace') {
       const sel = window.getSelection();
-      if (!sel || !sel.rangeCount) return;
-      let block = sel.anchorNode;
-      let targetTask = null, targetBullet = null, targetNum = null;
-      while (block && block.parentNode !== canvas) {
-        if (block === canvas) break;
-        if (block.classList && block.classList.contains('nl-task-item')) targetTask = block;
-        if (block.classList && block.classList.contains('nl-bullet-item')) targetBullet = block;
-        if (block.classList && block.classList.contains('nl-num-item')) targetNum = block;
-        block = block.parentNode;
-      }
-      if (!block || block === canvas) return;
-      
-      const targetSpecial = targetTask || targetBullet || targetNum;
-      if (targetSpecial) {
-        const textSpan = targetSpecial.querySelector('.nl-task-text') || targetSpecial.querySelector('.nl-bullet-text') || targetSpecial.querySelector('.nl-num-text') || targetSpecial;
-        const textVal = (textSpan.textContent || '').trim();
-        if (!textVal) {
+      if (!sel || !sel.rangeCount || !sel.isCollapsed) return;
+
+      const block = getLiveBlockAtSelection();
+      if (!block) return;
+
+      const bType = getBlockType(block);
+      if (bType !== 'paragraph') {
+        const textTarget = block.querySelector('.nl-task-text, .nl-bullet-text, .nl-num-text, code') || block;
+        const textVal = (textTarget.textContent || '').trim();
+
+        if (!textVal || sel.anchorOffset === 0) {
           e.preventDefault();
-          const p = document.createElement('p');
-          p.className = 'nl-p';
-          p.innerHTML = '<br>';
-          targetSpecial.parentNode.replaceChild(p, targetSpecial);
-          placeCaretInElement(p);
+          const p = convertLiveBlock(block, 'paragraph');
+          if (!textVal) {
+            p.innerHTML = '<br>';
+            placeCaretInElement(p);
+          }
           saveCurrentNoteLive();
           updateNoteStats();
+          updateNoteToolbarState();
           return;
         }
-      }
-      
-      const text = (block.textContent || '').trim();
-      if (!text && (block.tagName === 'H1' || block.tagName === 'H2' || block.tagName === 'H3' || block.tagName === 'BLOCKQUOTE' || (block.classList && (block.classList.contains('nl-task-item') || block.classList.contains('nl-bullet-item') || block.classList.contains('nl-num-item'))))) {
-        e.preventDefault();
-        const p = document.createElement('p');
-        p.className = 'nl-p';
-        p.innerHTML = '<br>';
-        block.parentNode.replaceChild(p, block);
-        placeCaretInElement(p);
-        saveCurrentNoteLive();
-        updateNoteStats();
       }
     }
   });
 
-  // Paste handling: parse raw markdown into live elements
+  // Paste handling: parse markdown text into live preview blocks
   canvas.addEventListener('paste', e => {
     const text = (e.clipboardData || window.clipboardData).getData('text');
     if (text && (text.includes('\n') || text.startsWith('#') || text.startsWith('-') || text.startsWith('>') || text.startsWith('['))) {
@@ -5720,6 +5989,7 @@ function initLiveEditorEventsOnce() {
       document.execCommand('insertHTML', false, html);
       saveCurrentNoteLive();
       updateNoteStats();
+      updateNoteToolbarState();
     }
   });
 }
@@ -5727,116 +5997,184 @@ function initLiveEditorEventsOnce() {
 // Toolbar Formatting Handler for both Live Preview and Source modes
 function applyNoteFormat(type) {
   if (noteEditorMode === 'source') {
-    const ta = document.getElementById('n-content');
-    if (!ta) return;
-    const start = ta.selectionStart, end = ta.selectionEnd;
-    const selected = ta.value.substring(start, end);
-    let prefix = '', suffix = '', placeholder = 'text';
+    applySourceNoteFormat(type);
+    return;
+  }
 
-    if (type === 'bold') { prefix = '**'; suffix = '**'; placeholder = 'bold text'; }
-    else if (type === 'italic') { prefix = '*'; suffix = '*'; placeholder = 'italic text'; }
-    else if (type === 'strike') { prefix = '~~'; suffix = '~~'; placeholder = 'strikethrough text'; }
-    else if (type === 'h1') { prefix = '# '; placeholder = 'Heading 1'; }
-    else if (type === 'h2') { prefix = '## '; placeholder = 'Heading 2'; }
-    else if (type === 'h3') { prefix = '### '; placeholder = 'Heading 3'; }
-    else if (type === 'bullet') { prefix = '- '; placeholder = 'List item'; }
-    else if (type === 'task') { prefix = '- [ ] '; placeholder = 'Checklist task'; }
-    else if (type === 'number') { prefix = '1. '; placeholder = 'Numbered item'; }
-    else if (type === 'quote') { prefix = '> '; placeholder = 'Quote text'; }
-    else if (type === 'code') { prefix = '`'; suffix = '`'; placeholder = 'code'; }
-    else if (type === 'codeblock') { prefix = '\n```\n'; suffix = '\n```\n'; placeholder = '// code block'; }
-    else if (type === 'link') { prefix = '['; suffix = '](https://example.com)'; placeholder = 'Link title'; }
-    else if (type === 'divider') { prefix = '\n---\n'; placeholder = ''; }
+  const canvas = document.getElementById('n-live-editor');
+  if (!canvas) return;
+  canvas.focus();
 
-    const textToInsert = selected || placeholder;
-    const rep = prefix + textToInsert + suffix;
-    ta.value = ta.value.substring(0, start) + rep + ta.value.substring(end);
+  // Inline formatting
+  if (type === 'bold') {
+    document.execCommand('bold');
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+  if (type === 'italic') {
+    document.execCommand('italic');
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+  if (type === 'strike') {
+    document.execCommand('strikeThrough');
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+  if (type === 'code') {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed) {
+      const txt = sel.toString();
+      let parent = sel.anchorNode;
+      while (parent && parent !== canvas && parent.tagName !== 'CODE') parent = parent.parentNode;
+      if (parent && parent.tagName === 'CODE') {
+        const textNode = document.createTextNode(parent.textContent);
+        parent.parentNode.replaceChild(textNode, parent);
+      } else {
+        document.execCommand('insertHTML', false, `<code>${esc(txt || 'code')}</code>`);
+      }
+    } else {
+      document.execCommand('insertHTML', false, `<code>code</code>`);
+    }
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+  if (type === 'link') {
+    const sel = window.getSelection();
+    const selText = sel ? sel.toString().trim() : '';
+    const url = prompt('Enter URL for link:', 'https://');
+    if (url) {
+      const text = selText || prompt('Link display text:', url) || url;
+      document.execCommand('insertHTML', false, `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>`);
+    }
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+  if (type === 'divider') {
+    const block = getLiveBlockAtSelection();
+    const hr = document.createElement('hr');
+    hr.className = 'nl-hr';
+    const nextP = document.createElement('p');
+    nextP.className = 'nl-p';
+    nextP.innerHTML = '<br>';
+    if (block && block.parentNode === canvas) {
+      block.after(hr);
+      hr.after(nextP);
+    } else {
+      canvas.appendChild(hr);
+      canvas.appendChild(nextP);
+    }
+    placeCaretInElement(nextP);
+    saveCurrentNoteLive();
+    updateNoteStats();
+    updateNoteToolbarState();
+    return;
+  }
+
+  // Block formatting: quote, h1, h2, h3, task, bullet, number, codeblock
+  let block = getLiveBlockAtSelection();
+  if (!block) {
+    if (!canvas.childNodes.length) {
+      canvas.innerHTML = '<p class="nl-p"><br></p>';
+    }
+    block = canvas.firstElementChild;
+  }
+
+  const currentType = getBlockType(block);
+  if (currentType === type) {
+    // TOGGLE OFF: revert back to normal paragraph!
+    convertLiveBlock(block, 'paragraph');
+  } else {
+    // TOGGLE ON / CONVERT: switch to requested format!
+    convertLiveBlock(block, type);
+  }
+}
+
+// Source Mode Formatting with line prefix toggle support
+function applySourceNoteFormat(type) {
+  const ta = document.getElementById('n-content');
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const val = ta.value;
+
+  const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+  let lineEnd = val.indexOf('\n', end);
+  if (lineEnd === -1) lineEnd = val.length;
+
+  const selectedText = val.substring(start, end);
+  const fullLinesText = val.substring(lineStart, lineEnd);
+  const lines = fullLinesText.split('\n');
+
+  if (['h1', 'h2', 'h3', 'quote', 'task', 'bullet', 'number'].includes(type)) {
+    let allHave = false;
+    if (type === 'quote') allHave = lines.every(l => l.startsWith('> '));
+    else if (type === 'h1') allHave = lines.every(l => l.startsWith('# '));
+    else if (type === 'h2') allHave = lines.every(l => l.startsWith('## '));
+    else if (type === 'h3') allHave = lines.every(l => l.startsWith('### '));
+    else if (type === 'bullet') allHave = lines.every(l => l.startsWith('- '));
+    else if (type === 'task') allHave = lines.every(l => /^([-*+]\s+)?\[[ xX]\]\s*/.test(l));
+    else if (type === 'number') allHave = lines.every(l => /^\d+\.\s*/.test(l));
+
+    const newLines = lines.map((line, idx) => {
+      const clean = line.replace(/^(#{1,6}\s+|>\s+|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d+\.\s+)/, '');
+      if (allHave) {
+        return clean;
+      } else {
+        if (type === 'quote') return '> ' + clean;
+        if (type === 'h1') return '# ' + clean;
+        if (type === 'h2') return '## ' + clean;
+        if (type === 'h3') return '### ' + clean;
+        if (type === 'bullet') return '- ' + clean;
+        if (type === 'task') return '- [ ] ' + clean;
+        if (type === 'number') return `${idx + 1}. ` + clean;
+        return clean;
+      }
+    });
+
+    const replaced = newLines.join('\n');
+    ta.value = val.substring(0, lineStart) + replaced + val.substring(lineEnd);
     ta.focus();
-    ta.selectionStart = start + prefix.length;
-    ta.selectionEnd = start + prefix.length + textToInsert.length;
+    ta.selectionStart = lineStart;
+    ta.selectionEnd = lineStart + replaced.length;
     updateNoteStats();
     saveCurrentNoteLive();
     return;
   }
 
-  // Live Preview mode formatting
-  const canvas = document.getElementById('n-live-editor');
-  if (!canvas) return;
-  canvas.focus();
+  let prefix = '', suffix = '', placeholder = 'text';
+  if (type === 'bold') { prefix = '**'; suffix = '**'; placeholder = 'bold text'; }
+  else if (type === 'italic') { prefix = '*'; suffix = '*'; placeholder = 'italic text'; }
+  else if (type === 'strike') { prefix = '~~'; suffix = '~~'; placeholder = 'strikethrough'; }
+  else if (type === 'code') { prefix = '`'; suffix = '`'; placeholder = 'code'; }
+  else if (type === 'codeblock') { prefix = '```\n'; suffix = '\n```'; placeholder = '// code block'; }
+  else if (type === 'link') { prefix = '['; suffix = '](https://example.com)'; placeholder = 'Link text'; }
+  else if (type === 'divider') { prefix = '\n---\n'; suffix = ''; placeholder = ''; }
 
-  if (type === 'bold') {
-    document.execCommand('bold');
-  } else if (type === 'italic') {
-    document.execCommand('italic');
-  } else if (type === 'strike') {
-    document.execCommand('strikeThrough');
-  } else if (type === 'h1') {
-    document.execCommand('formatBlock', false, '<h1>');
-    const sel = window.getSelection();
-    if (sel && sel.anchorNode) {
-      let b = sel.anchorNode;
-      while (b && b.tagName !== 'H1' && b !== canvas) b = b.parentNode;
-      if (b && b.tagName === 'H1') b.className = 'nl-h1';
-    }
-  } else if (type === 'h2') {
-    document.execCommand('formatBlock', false, '<h2>');
-    const sel = window.getSelection();
-    if (sel && sel.anchorNode) {
-      let b = sel.anchorNode;
-      while (b && b.tagName !== 'H2' && b !== canvas) b = b.parentNode;
-      if (b && b.tagName === 'H2') b.className = 'nl-h2';
-    }
-  } else if (type === 'h3') {
-    document.execCommand('formatBlock', false, '<h3>');
-    const sel = window.getSelection();
-    if (sel && sel.anchorNode) {
-      let b = sel.anchorNode;
-      while (b && b.tagName !== 'H3' && b !== canvas) b = b.parentNode;
-      if (b && b.tagName === 'H3') b.className = 'nl-h3';
-    }
-  } else if (type === 'quote') {
-    document.execCommand('formatBlock', false, '<blockquote>');
-    const sel = window.getSelection();
-    if (sel && sel.anchorNode) {
-      let b = sel.anchorNode;
-      while (b && b.tagName !== 'BLOCKQUOTE' && b !== canvas) b = b.parentNode;
-      if (b && b.tagName === 'BLOCKQUOTE') b.className = 'nl-quote';
-    }
-  } else if (type === 'bullet') {
-    const sel = window.getSelection();
-    const txt = sel ? sel.toString().trim() : '';
-    const html = `<div class="nl-bullet-item"><span class="nl-bullet-marker">•</span><span class="nl-bullet-text">${txt || 'List item'}</span></div><p class="nl-p"><br></p>`;
-    document.execCommand('insertHTML', false, html);
-  } else if (type === 'task') {
-    const sel = window.getSelection();
-    const txt = sel ? sel.toString().trim() : '';
-    const html = `<div class="nl-task-item"><input type="checkbox" class="nl-task-checkbox" contenteditable="false"><span class="nl-task-text">${txt || 'Checklist task'}</span></div><p class="nl-p"><br></p>`;
-    document.execCommand('insertHTML', false, html);
-  } else if (type === 'number') {
-    const sel = window.getSelection();
-    const txt = sel ? sel.toString().trim() : '';
-    const html = `<div class="nl-num-item"><span class="nl-num-marker">1.</span><span class="nl-num-text">${txt || 'Numbered item'}</span></div><p class="nl-p"><br></p>`;
-    document.execCommand('insertHTML', false, html);
-  } else if (type === 'code') {
-    const sel = window.getSelection();
-    const txt = sel ? sel.toString() : 'code';
-    document.execCommand('insertHTML', false, `<code>${esc(txt || 'code')}</code>`);
-  } else if (type === 'codeblock') {
-    const html = `<pre class="nl-code-block"><code>// Code block</code></pre><p><br></p>`;
-    document.execCommand('insertHTML', false, html);
-  } else if (type === 'link') {
-    const url = prompt('Enter URL:', 'https://');
-    if (url) {
-      const sel = window.getSelection();
-      const txt = sel ? sel.toString() : url;
-      document.execCommand('insertHTML', false, `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(txt || url)}</a>`);
-    }
-  } else if (type === 'divider') {
-    document.execCommand('insertHTML', false, `<hr class="nl-hr"><p><br></p>`);
+  if (selectedText.startsWith(prefix) && suffix && selectedText.endsWith(suffix) && selectedText.length >= prefix.length + suffix.length) {
+    const unwrapped = selectedText.substring(prefix.length, selectedText.length - suffix.length);
+    ta.value = val.substring(0, start) + unwrapped + val.substring(end);
+    ta.selectionStart = start;
+    ta.selectionEnd = start + unwrapped.length;
+  } else {
+    const textToInsert = selectedText || placeholder;
+    const rep = prefix + textToInsert + suffix;
+    ta.value = val.substring(0, start) + rep + val.substring(end);
+    ta.selectionStart = start + prefix.length;
+    ta.selectionEnd = start + prefix.length + textToInsert.length;
   }
-
-  saveCurrentNoteLive();
+  ta.focus();
   updateNoteStats();
+  saveCurrentNoteLive();
 }
 
 function insertNoteMD(prefix,suffix,placeholder){
