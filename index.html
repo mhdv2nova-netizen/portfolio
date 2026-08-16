@@ -5459,6 +5459,43 @@ const bcl=(t,s)=>t==='goal'?(s==='complete'?'goal complete':s||'goal'):t==='even
 const tcl=(t,s)=>s==='complete'?'completed':s==='irrelevant'?'irrelevant':'';
 const nxt=c=>{const s=['incomplete','complete','migrated','scheduled','irrelevant'];return s[(s.indexOf(c||'incomplete')+1)%s.length]};
 
+function parseRapidLogInput(rawText, defaultType = 'task') {
+  let text = (rawText || '').trim();
+  let type = defaultType || 'task';
+  let priority = false;
+
+  if (!text) return { text: '', type, priority };
+
+  // Note bullet prefixes: "- ", "— ", "-- "
+  if (/^[-—]{1,2}\s+/.test(text)) {
+    type = 'note';
+    text = text.replace(/^[-—]{1,2}\s+/, '').trim();
+  }
+  // Event bullet prefixes: "○ ", "o ", "O ", "() "
+  else if (/^(○|\(\)|[oO]\s)\s*/.test(text)) {
+    type = 'event';
+    text = text.replace(/^(○|\(\)|[oO]\s)\s*/, '').trim();
+  }
+  // Priority Task prefixes: "* ", "★ ", "! "
+  else if (/^([*★!])\s+/.test(text)) {
+    type = 'task';
+    priority = true;
+    text = text.replace(/^([*★!])\s+/, '').trim();
+  }
+  // Standard Task prefixes: "• ", ". ", "[] ", "[ ] "
+  else if (/^(•|\.|\x5b\s*\x5d)\s+/.test(text)) {
+    type = 'task';
+    text = text.replace(/^(•|\.|\x5b\s*\x5d)\s+/, '').trim();
+  }
+  // Goal bullet prefix: "🎯 "
+  else if (/^🎯\s*/.test(text)) {
+    type = 'goal';
+    text = text.replace(/^🎯\s*/, '').trim();
+  }
+
+  return { text, type, priority };
+}
+
 // NAV
 
 // ==================== HOME / INDEX DASHBOARD LOGIC ====================
@@ -5648,7 +5685,14 @@ function rIndex() {
 
   // 5. WEEKLY FOCUS / GOALS
   const wKey = weekKey(today);
-  const wGoals = getWeeklyFlatEntries(wKey);
+  const allWeeklyEntries = getWeeklyFlatEntries(wKey);
+  // Filter for weekly focus items (goals and actionable tasks, excluding notes and events)
+  const wGoals = allWeeklyEntries.filter(g => {
+    if (!g) return false;
+    if (g.type === 'note' || g.type === 'event') return false;
+    if (typeof g.text === 'string' && /^[-—]{1,2}\s+/.test(g.text) && g.type !== 'goal' && g.type !== 'task') return false;
+    return true;
+  });
   const wGoalsCountBadge = document.getElementById('db-weekly-goals-count');
   const wGoalsBody = document.getElementById('db-weekly-goals-body');
 
@@ -5661,10 +5705,11 @@ function rIndex() {
     } else {
       goalsHTML = wGoals.map(g => {
         const isDone = g.state === 'complete' || g.done === true;
+        const icon = g.type === 'goal' ? '🎯 ' : (g.type === 'task' ? '• ' : '');
         return `
         <div class="db-goal-item ${isDone ? 'done' : ''}">
           <input type="checkbox" ${isDone ? 'checked' : ''} onchange="cycIndexWeeklyGoal('${g.id}')">
-          <span style="flex:1;cursor:pointer" onclick="cycIndexWeeklyGoal('${g.id}')">${g.type === 'goal' ? '🎯 ' : ''}${esc(g.text)}</span>
+          <span style="flex:1;cursor:pointer" onclick="cycIndexWeeklyGoal('${g.id}')">${icon}${esc(g.text)}</span>
         </div>`;
       }).join('');
     }
@@ -5727,6 +5772,7 @@ function cycIndexWeeklyGoal(id) {
   }
   if (!res.item) return;
   const g = res.item;
+  if (g.type === 'note' || g.type === 'event') return;
   const isDone = g.state === 'complete' || g.done === true;
   g.state = isDone ? 'incomplete' : 'complete';
   g.done = !isDone;
@@ -5738,8 +5784,11 @@ function cycIndexWeeklyGoal(id) {
 function addIndexWeeklyGoal() {
   const input = document.getElementById('db-goal-input');
   if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
+  const rawText = input.value.trim();
+  if (!rawText) return;
+  const parsed = parseRapidLogInput(rawText, 'goal');
+  if (!parsed.text) return;
+
   const k = weekKey(new Date());
   const data = ensureWeeklyObject(k);
   if (!data.areas || !data.areas.length) {
@@ -5753,7 +5802,14 @@ function addIndexWeeklyGoal() {
       collapsed: false
     }];
   }
-  data.areas[0].items.push({ id: gid(), type: 'goal', text: text, priority: false, state: 'incomplete', subtasks: [] });
+  data.areas[0].items.push({
+    id: gid(),
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: (parsed.type === 'task' || parsed.type === 'goal') ? 'incomplete' : null,
+    subtasks: []
+  });
   save();
   input.value = '';
   rIndex();
@@ -5891,21 +5947,23 @@ function closeQuickAddModal() {
 }
 
 function submitQuickAdd() {
-  const type = document.getElementById('qa-type').value;
-  const text = document.getElementById('qa-input').value.trim();
+  const selType = document.getElementById('qa-type').value;
+  const rawText = document.getElementById('qa-input').value.trim();
   const priority = document.getElementById('qa-priority').checked;
 
-  if (!text) return;
+  if (!rawText) return;
+  const parsed = parseRapidLogInput(rawText, selType);
+  if (!parsed.text) return;
 
   const todayDK = dk(new Date());
   if (!D.dailyLogs[todayDK]) D.dailyLogs[todayDK] = [];
 
   D.dailyLogs[todayDK].push({
     id: gid(),
-    type: type,
-    text: text,
-    priority: priority,
-    state: type === 'task' ? 'incomplete' : null,
+    type: parsed.type,
+    text: parsed.text,
+    priority: priority || parsed.priority,
+    state: parsed.type === 'task' ? 'incomplete' : null,
     subtasks: []
   });
 
@@ -6574,7 +6632,29 @@ function rDL(){
   }
   c.innerHTML=en.map(e=>rE(e,'daily')).join('');
 }
-function addEntry(){const t=document.getElementById('entry-type').value,x=document.getElementById('entry-text').value.trim(),p=document.getElementById('entry-priority').checked;if(!x)return;const k=dk(curDay);if(!D.dailyLogs[k])D.dailyLogs[k]=[];D.dailyLogs[k].push({id:gid(),type:t,text:x,priority:p,state:t==='task'?'incomplete':null,subtasks:[]});save();document.getElementById('entry-text').value='';document.getElementById('entry-priority').checked=false;rDL()}
+function addEntry(){
+  const selType=document.getElementById('entry-type').value,
+        rawText=document.getElementById('entry-text').value.trim(),
+        p=document.getElementById('entry-priority').checked;
+  if(!rawText)return;
+  const parsed = parseRapidLogInput(rawText, selType);
+  if(!parsed.text)return;
+
+  const k=dk(curDay);
+  if(!D.dailyLogs[k])D.dailyLogs[k]=[];
+  D.dailyLogs[k].push({
+    id: gid(),
+    type: parsed.type,
+    text: parsed.text,
+    priority: p || parsed.priority,
+    state: parsed.type === 'task' ? 'incomplete' : null,
+    subtasks: []
+  });
+  save();
+  document.getElementById('entry-text').value='';
+  document.getElementById('entry-priority').checked=false;
+  rDL();
+}
 function cyc(id){const k=dk(curDay);const e=(D.dailyLogs[k]||[]).find(x=>x.id===id);if(!e||e.type!=='task')return;e.state=nxt(e.state);save();rDL()}
 function priE(id){const k=dk(curDay);const e=(D.dailyLogs[k]||[]).find(x=>x.id===id);if(e){e.priority=!e.priority;save();rDL()}}
 function delE(id){const k=dk(curDay);const e=(D.dailyLogs[k]||[]).find(x=>x.id===id);if(e){moveToTrash('daily',k,e);D.dailyLogs[k]=D.dailyLogs[k].filter(x=>x.id!==id);save();rDL()}}
@@ -6657,13 +6737,23 @@ function rW(){
 function addW(dkey){
   const inp=document.getElementById('wi-'+dkey);
   const sel=document.getElementById('wt-'+dkey);
-  const text=inp ? inp.value.trim() : '';
-  if(!text)return;
-  const type = sel ? sel.value : 'task';
-  lastWeeklyDayType[dkey] = type;
-  lastWeeklyDayType['global'] = type;
+  const rawText=inp ? inp.value.trim() : '';
+  if(!rawText)return;
+  const selType = sel ? sel.value : 'task';
+  const parsed = parseRapidLogInput(rawText, selType);
+  if(!parsed.text)return;
+
+  lastWeeklyDayType[dkey] = parsed.type;
+  lastWeeklyDayType['global'] = parsed.type;
   if(!D.dailyLogs[dkey])D.dailyLogs[dkey]=[];
-  D.dailyLogs[dkey].push({id:gid(),type,text,priority:false,state:type==='task'?'incomplete':null,subtasks:[]});
+  D.dailyLogs[dkey].push({
+    id: gid(),
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: parsed.type === 'task' ? 'incomplete' : null,
+    subtasks: []
+  });
   save();
   rW();
   setTimeout(() => {
@@ -6795,9 +6885,12 @@ function rWG() {
 
   areas.forEach(area => {
     (area.items || []).forEach(item => {
-      totalItems++;
+      const isTaskLike = item.type === 'goal' || item.type === 'task' || !item.type;
       const isDone = item.state === 'complete' || item.done === true;
-      if (isDone) completedItems++;
+      if (isTaskLike) {
+        totalItems++;
+        if (isDone) completedItems++;
+      }
 
       if (item.type === 'goal') {
         totalGoals++;
@@ -6885,9 +6978,10 @@ function rWG() {
   } else {
     areas.forEach((area, areaIdx) => {
       const areaItems = area.items || [];
-      const totalAreaItems = areaItems.length;
-      const doneAreaItems = areaItems.filter(e => e.state === 'complete' || e.done === true).length;
-      const areaPct = totalAreaItems > 0 ? Math.round((doneAreaItems / totalAreaItems) * 100) : 0;
+      const actionableItems = areaItems.filter(e => e.type === 'goal' || e.type === 'task' || !e.type);
+      const totalAreaItems = actionableItems.length;
+      const doneAreaItems = actionableItems.filter(e => e.state === 'complete' || e.done === true).length;
+      const areaPct = totalAreaItems > 0 ? Math.round((doneAreaItems / totalAreaItems) * 100) : (areaItems.length > 0 ? 100 : 0);
       const isCollapsed = !!area.collapsed;
 
       const filteredItems = areaItems.filter(e => {
@@ -7197,11 +7291,14 @@ function addWeeklyAreaEntry(areaId) {
   const textInp = document.getElementById(`w-area-item-input-${areaId}`);
   if (!textInp) return;
 
-  const text = textInp.value.trim();
-  if (!text) return;
+  const rawText = textInp.value.trim();
+  if (!rawText) return;
 
-  const type = typeSel ? typeSel.value : 'goal';
-  lastWeeklyAreaType[areaId] = type;
+  const selType = typeSel ? typeSel.value : 'goal';
+  const parsed = parseRapidLogInput(rawText, selType);
+  if (!parsed.text) return;
+
+  lastWeeklyAreaType[areaId] = parsed.type;
   const k = wgKey();
   const data = ensureWeeklyObject(k);
   const area = (data.areas || []).find(a => a.id === areaId);
@@ -7210,10 +7307,10 @@ function addWeeklyAreaEntry(areaId) {
   if (!area.items) area.items = [];
   area.items.push({
     id: gid(),
-    type: type,
-    text: text,
-    priority: false,
-    state: (type === 'task' || type === 'goal') ? 'incomplete' : null,
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: (parsed.type === 'task' || parsed.type === 'goal') ? 'incomplete' : null,
     subtasks: []
   });
 
@@ -7280,15 +7377,17 @@ function addWeekGoal() {
     }];
   }
   const inp = document.getElementById('wg-input');
-  const text = inp ? inp.value.trim() : '';
-  if (!text) return;
+  const rawText = inp ? inp.value.trim() : '';
+  if (!rawText) return;
+  const parsed = parseRapidLogInput(rawText, 'goal');
+  if (!parsed.text) return;
 
   data.areas[0].items.push({
     id: gid(),
-    type: 'goal',
-    text: text,
-    priority: false,
-    state: 'incomplete',
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: (parsed.type === 'task' || parsed.type === 'goal') ? 'incomplete' : null,
     subtasks: []
   });
 
@@ -7863,11 +7962,13 @@ function addAreaEntry(areaId) {
   const typeSelect = document.getElementById(`matype-${areaId}`);
   const textInput = document.getElementById(`mainp-${areaId}`);
   if (!textInput) return;
-  const text = textInput.value.trim();
-  if (!text) return;
-  const type = typeSelect ? typeSelect.value : 'task';
-  lastMonthlyAreaType[areaId] = type;
+  const rawText = textInput.value.trim();
+  if (!rawText) return;
+  const selType = typeSelect ? typeSelect.value : 'task';
+  const parsed = parseRapidLogInput(rawText, selType);
+  if (!parsed.text) return;
 
+  lastMonthlyAreaType[areaId] = parsed.type;
   const k = mkk(curMonth);
   const mData = ensureMonthlyObject(k);
   const area = (mData.areas || []).find(a => a.id === areaId);
@@ -7876,10 +7977,10 @@ function addAreaEntry(areaId) {
   if (!area.items) area.items = [];
   area.items.push({
     id: gid(),
-    type: type,
-    text: text,
-    priority: false,
-    state: (type === 'task' || type === 'goal') ? 'incomplete' : null,
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: (parsed.type === 'task' || parsed.type === 'goal') ? 'incomplete' : null,
     subtasks: []
   });
 
@@ -7895,9 +7996,11 @@ function addAreaEntry(areaId) {
 function addME() {
   const tEl = document.getElementById('m-type');
   const xEl = document.getElementById('m-text');
-  const t = tEl ? tEl.value : 'task';
-  const x = xEl ? xEl.value.trim() : '';
-  if (!x) return;
+  const selType = tEl ? tEl.value : 'task';
+  const rawText = xEl ? xEl.value.trim() : '';
+  if (!rawText) return;
+  const parsed = parseRapidLogInput(rawText, selType);
+  if (!parsed.text) return;
 
   const k = mkk(curMonth);
   const mData = ensureMonthlyObject(k);
@@ -7915,10 +8018,10 @@ function addME() {
 
   mData.areas[0].items.push({
     id: gid(),
-    type: t,
-    text: x,
-    priority: false,
-    state: (t === 'task' || t === 'goal') ? 'incomplete' : null,
+    type: parsed.type,
+    text: parsed.text,
+    priority: parsed.priority,
+    state: (parsed.type === 'task' || parsed.type === 'goal') ? 'incomplete' : null,
     subtasks: []
   });
 
@@ -7970,7 +8073,7 @@ function setMonthlySearch(q) {
 function openDM(k){modalDt=k;document.getElementById('dm-title').textContent=fD(new Date(k+'T00:00:00'));document.getElementById('dm-input').value='';rDME();document.getElementById('day-modal').classList.add('active')}
 function closeDM(){document.getElementById('day-modal').classList.remove('active');rCal()}
 function rDME(){const en=D.dailyLogs[modalDt]||[];const c=document.getElementById('dm-entries');if(!en.length){c.innerHTML='<div class="empty-state" style="padding:14px"><p>No entries</p></div>';return}c.innerHTML=en.map(e=>rE(e,'modal')).join('')}
-function addDME(){const t=document.getElementById('dm-type').value,x=document.getElementById('dm-input').value.trim();if(!x)return;if(!D.dailyLogs[modalDt])D.dailyLogs[modalDt]=[];D.dailyLogs[modalDt].push({id:gid(),type:t,text:x,priority:false,state:t==='task'?'incomplete':null,subtasks:[]});save();document.getElementById('dm-input').value='';rDME()}
+function addDME(){const t=document.getElementById('dm-type').value,x=document.getElementById('dm-input').value.trim();if(!x)return;const parsed=parseRapidLogInput(x,t);if(!parsed.text)return;if(!D.dailyLogs[modalDt])D.dailyLogs[modalDt]=[];D.dailyLogs[modalDt].push({id:gid(),type:parsed.type,text:parsed.text,priority:parsed.priority,state:parsed.type==='task'?'incomplete':null,subtasks:[]});save();document.getElementById('dm-input').value='';rDME()}
 function cycDM(id){const e=(D.dailyLogs[modalDt]||[]).find(x=>x.id===id);if(!e||e.type!=='task')return;e.state=nxt(e.state);save();rDME()}
 function priDM(id){const e=(D.dailyLogs[modalDt]||[]).find(x=>x.id===id);if(e){e.priority=!e.priority;save();rDME()}}
 function delDME(id){const e=(D.dailyLogs[modalDt]||[]).find(x=>x.id===id);if(e){moveToTrash('daily',modalDt,e);D.dailyLogs[modalDt]=D.dailyLogs[modalDt].filter(x=>x.id!==id);save();rDME()}}
@@ -9688,13 +9791,14 @@ function handleCmdSearch(query) {
     });
 
     Object.keys(D.weeklyGoals || {}).forEach(wKey => {
-      (D.weeklyGoals[wKey] || []).forEach(g => {
+      getWeeklyFlatEntries(wKey).forEach(g => {
         if ((g.text || '').toLowerCase().includes(q)) {
+          const symIcon = sym(g.type || 'goal', g.state);
           cmdSearchResults.push({
             type: 'weekly',
             title: g.text,
-            subtitle: `Weekly Goal • Week of ${wKey}`,
-            icon: '🎯',
+            subtitle: `Weekly Log • Week of ${wKey} (${g.type || 'goal'})`,
+            icon: symIcon,
             action: () => {
               weekStart = getWeekStart(new Date(wKey + 'T00:00:00'));
               showPage('weekly');
