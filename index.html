@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 
 <!-- Primary SEO Meta Tags -->
 <title>KINETIC — Bullet Journal by Deep | Personal Execution Hub</title>
@@ -3241,12 +3241,34 @@ html, body {
   .habit-controls{gap:6px}
   .habit-controls input{font-size:16px;padding:10px;width:100%}
 
-  /* Modals */
-  .modal-overlay{align-items:flex-end;padding:0}
+  /* Modals - Mobile & Keyboard Optimized */
+  .modal-overlay{
+    align-items:center;
+    justify-content:center;
+    padding:16px 12px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
   .modal{
-    max-width:100%;border-radius:var(--radius-lg) var(--radius-lg) 0 0;
-    max-height:88vh;padding:22px 18px;
-    animation:modalSlideUp .35s cubic-bezier(.4,0,.2,1);
+    max-width:100%;
+    width:100%;
+    border-radius:var(--radius-lg);
+    max-height:calc(90dvh - 24px);
+    max-height:calc(90vh - 24px);
+    padding:20px 16px;
+    margin:auto;
+    overflow-y:auto;
+    animation:modalIn .25s cubic-bezier(.4,0,.2,1);
+  }
+  body.keyboard-open .modal-overlay{
+    align-items:flex-start;
+    padding-top:12px;
+    padding-bottom:12px;
+  }
+  body.keyboard-open .modal{
+    max-height:calc(100dvh - 20px);
+    max-height:calc(100vh - 20px);
+    padding:16px 14px;
   }
   .wn-modal-card {
     max-width: 94%;
@@ -3257,6 +3279,20 @@ html, body {
   }
   .wn-slide h2 { font-size: 1.65rem; }
   .wn-slides-container { min-height: 230px; }
+
+  /* Mobile Keyboard Obscurity Prevention */
+  body.keyboard-open .mobile-bottom-nav {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
+  }
+  body.keyboard-open .page {
+    padding-bottom: 24px !important;
+  }
+  body.keyboard-open .entries-list {
+    scroll-margin-bottom: 80px;
+  }
 
   /* Notes */
   .note-editor-bar{flex-wrap:wrap;padding:10px 14px}
@@ -10277,6 +10313,67 @@ document.addEventListener('keydown', e => {
     }
   }
 });
+
+// ═══════════════════ MOBILE KEYBOARD OBSERVER & NOTE VIEW ALIGNMENT ═══════════════════
+(function initMobileKeyboardObserver() {
+  let isKeyboardOpen = false;
+
+  function updateKeyboardState(open) {
+    if (isKeyboardOpen === open) return;
+    isKeyboardOpen = open;
+    if (open) {
+      document.body.classList.add('keyboard-open');
+    } else {
+      document.body.classList.remove('keyboard-open');
+    }
+  }
+
+  function handleInputFocus(e) {
+    const el = e.target;
+    if (!el || !el.matches) return;
+    if (el.matches('input, textarea, select, [contenteditable="true"]')) {
+      updateKeyboardState(true);
+      setTimeout(() => {
+        try {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        } catch (_) {
+          el.scrollIntoView(false);
+        }
+      }, 250);
+    }
+  }
+
+  function handleInputBlur() {
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (!active || !active.matches('input, textarea, select, [contenteditable="true"]')) {
+        updateKeyboardState(false);
+      }
+    }, 120);
+  }
+
+  document.addEventListener('focusin', handleInputFocus, { passive: true });
+  document.addEventListener('focusout', handleInputBlur, { passive: true });
+
+  if (window.visualViewport) {
+    let baseHeight = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', () => {
+      const curHeight = window.visualViewport.height;
+      if (baseHeight - curHeight > 130) {
+        updateKeyboardState(true);
+        const active = document.activeElement;
+        if (active && active.matches('input, textarea, select, [contenteditable="true"]')) {
+          active.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (curHeight >= baseHeight - 40) {
+        const active = document.activeElement;
+        if (!active || !active.matches('input, textarea, select, [contenteditable="true"]')) {
+          updateKeyboardState(false);
+        }
+      }
+    });
+  }
+})();
 </script>
 </body>
 </html>
