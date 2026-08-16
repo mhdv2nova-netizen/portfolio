@@ -519,11 +519,25 @@ body{font-family:var(--body);background:var(--bg);background-image:var(--theme-w
 .monthly-area-add-form .custom-type-trigger,
 .weekly-area-add-form .custom-type-trigger,
 .weekly-day-add .custom-type-trigger{
-  height:28px;
-  padding:3px 8px;
+  height:26px;
+  padding:2px 6px;
   font-size:0.72rem;
   background:transparent;
   border-color:transparent;
+  gap:3px;
+  flex-shrink:0;
+}
+.weekly-day-add .custom-type-trigger .ct-text{
+  display:none; /* Keep day column trigger compact so add input has maximum room */
+}
+.weekly-day-add .custom-type-trigger .ct-badge{
+  font-size:0.85rem;
+  line-height:1;
+}
+.weekly-day-add .custom-type-trigger .ct-arrow{
+  font-size:0.55rem;
+  margin-left:1px;
+  opacity:0.8;
 }
 .monthly-area-add-form .custom-type-trigger:hover,
 .weekly-area-add-form .custom-type-trigger:hover,
@@ -547,6 +561,11 @@ body{font-family:var(--body);background:var(--bg);background-image:var(--theme-w
   bottom:calc(100% + 8px) !important;
   box-shadow:0 -12px 36px rgba(0,0,0,0.75), 0 0 0 1.5px var(--border) !important;
   animation:customTypeMenuDropupEnter .18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.weekly-day-col:last-child .weekly-day-add .custom-type-menu,
+.weekly-day-col:nth-child(7n) .weekly-day-add .custom-type-menu{
+  left:auto !important;
+  right:0 !important;
 }
 @keyframes customTypeMenuDropupEnter{
   from{opacity:0;transform:translateY(6px) scale(0.95)}
@@ -1030,27 +1049,37 @@ body{font-family:var(--body);background:var(--bg);background-image:var(--theme-w
 .week-stat.events strong{color:var(--orange)}
 .week-stat.notes strong{color:var(--accent2)}
 
-.weekly-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:26px}
+.weekly-grid{
+  display:grid;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+  gap:8px;
+  margin-bottom:26px;
+  width:100%;
+  box-sizing:border-box;
+}
 .weekly-day-col{
-  background:var(--bg-glass);backdrop-filter:blur(12px);border-radius:var(--radius);
+  background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:var(--radius);
   border:1px solid var(--border);overflow:visible;min-height:200px;
   display:flex;flex-direction:column;transition:all .25s;position:relative;
+  min-width:0;box-sizing:border-box;
 }
 .weekly-day-col:hover{border-color:var(--accent-soft);box-shadow:0 4px 20px rgba(167,139,250,0.08)}
 .weekly-day-col.today{border-color:rgba(167,139,250,0.3);box-shadow:0 0 0 1px var(--accent-soft),0 4px 20px rgba(167,139,250,0.12)}
 .weekly-day-header{
-  padding:12px 14px;text-align:center;font-size:.72rem;font-weight:500;
+  padding:10px 6px;text-align:center;font-size:.72rem;font-weight:500;
   cursor:pointer;transition:all .2s;border-radius:var(--radius) var(--radius) 0 0;
   background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
   border-bottom:1px solid var(--border-light);
+  min-width:0;
 }
 .weekly-day-header:hover{background:var(--bg-glass-hover)}
 .weekly-day-col.today .weekly-day-header{background:linear-gradient(135deg,rgba(167,139,250,0.12),rgba(96,165,250,0.08))}
-.weekly-day-header .wdh-name{text-transform:uppercase;letter-spacing:1.5px;font-size:.58rem;color:var(--text-tertiary);font-weight:600}
+.weekly-day-header .wdh-name{text-transform:uppercase;letter-spacing:1px;font-size:.6rem;color:var(--text-tertiary);font-weight:600;white-space:nowrap}
 .weekly-day-col.today .weekly-day-header .wdh-name{color:var(--accent)}
-.weekly-day-header .wdh-date{font-family:var(--heading);font-size:1.2rem;font-weight:500;margin-top:2px;color:var(--text-primary)}
-.weekly-day-body{flex:1;padding:8px;overflow-y:auto;max-height:350px}
-.weekly-entry{display:flex;align-items:flex-start;gap:5px;padding:5px 7px;margin-bottom:2px;border-radius:6px;transition:background .2s}
+.weekly-day-header .wdh-date{font-family:var(--heading);font-size:1.15rem;font-weight:600;margin-top:2px;color:var(--text-primary)}
+.weekly-day-body{flex:1;padding:6px 6px;overflow-y:auto;max-height:350px;min-width:0}
+.weekly-entry{display:flex;align-items:flex-start;gap:4px;padding:4px 5px;margin-bottom:2px;border-radius:6px;transition:background .2s;min-width:0}
 .weekly-entry:hover{background:var(--bg-glass)}
 .weekly-entry .we-bullet{
   width:18px;height:18px;display:flex;align-items:center;justify-content:center;
@@ -1058,7 +1087,7 @@ body{font-family:var(--body);background:var(--bg);background-image:var(--theme-w
   flex-shrink:0;user-select:none;border-radius:50%;transition:all .2s;
 }
 .weekly-entry .we-bullet:hover{background:var(--bg-glass-active);transform:scale(1.1)}
-.weekly-entry .we-text{flex:1;font-family:var(--body);font-size:0.88rem;line-height:1.4;color:var(--text-primary)}
+.weekly-entry .we-text{flex:1;font-family:var(--body);font-size:0.82rem;line-height:1.35;color:var(--text-primary);word-break:break-word;overflow-wrap:anywhere;min-width:0}
 .weekly-entry .we-text.completed{text-decoration:line-through;color:var(--text-tertiary)}
 .weekly-entry .we-text.irrelevant{text-decoration:line-through;opacity:.35}
 .weekly-entry .we-pri{color:var(--rose);font-weight:700;margin-right:2px;font-size:.72rem}
@@ -1066,17 +1095,17 @@ body{font-family:var(--body);background:var(--bg);background-image:var(--theme-w
 .weekly-entry:hover .we-del,.weekly-entry:hover .we-edit{opacity:1}
 .weekly-entry .we-del:hover{color:var(--rose)}
 .weekly-entry .we-edit:hover{color:var(--accent)}
-.weekly-day-add{display:flex;gap:4px;padding:8px 8px;border-top:1px solid var(--border-light);margin-top:auto}
+.weekly-day-add{display:flex;align-items:center;gap:3px;padding:6px 6px;border-top:1px solid var(--border-light);margin-top:auto;min-width:0;box-sizing:border-box}
 .weekly-day-add input{
-  flex:1;padding:5px 7px;border:none;background:transparent;
-  font-family:var(--body);font-size:.82rem;outline:none;color:var(--text-primary);
+  flex:1;min-width:0;width:0;padding:4px 6px;border:none;background:transparent;
+  font-family:var(--body);font-size:.78rem;outline:none;color:var(--text-primary);
 }
-.weekly-day-add input::placeholder{color:var(--text-muted)}
+.weekly-day-add input::placeholder{color:var(--text-muted);font-size:.72rem}
 .weekly-day-add select{padding:3px 5px;border:1px solid var(--border);border-radius:4px;font-size:.6rem;background:var(--bg-card-solid);color:var(--text-secondary)}
 .weekly-day-add select option{background:var(--bg-card-solid)}
-.weekly-day-add button{padding:3px 10px;background:var(--accent-soft);color:var(--accent);border:none;border-radius:4px;cursor:pointer;font-size:.6rem;font-weight:600;transition:all .2s}
+.weekly-day-add button{padding:3px 8px;background:var(--accent-soft);color:var(--accent);border:none;border-radius:4px;cursor:pointer;font-size:.75rem;font-weight:700;transition:all .2s;flex-shrink:0;height:24px;line-height:1}
 .weekly-day-add button:hover{background:var(--accent);color:var(--btn-primary-text, #000)}
-.weekly-day-empty{text-align:center;padding:24px 8px;color:var(--text-muted);font-size:.75rem;font-style:italic}
+.weekly-day-empty{text-align:center;padding:20px 4px;color:var(--text-muted);font-size:.72rem;font-style:italic}
 
 /* ═══════════════════ WEEKLY DASHBOARD ═══════════════════ */
 .weekly-dashboard{display:flex;flex-direction:column;gap:18px;margin-top:14px}
@@ -3148,6 +3177,11 @@ html, body {
   text-transform: uppercase;
 }
 
+@media(max-width:960px){
+  .weekly-grid{grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px}
+  .weekly-day-col{min-height:160px}
+}
+
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
@@ -3197,7 +3231,7 @@ html, body {
   .projects-grid,.notes-grid{grid-template-columns:1fr}
   .future-log-grid{grid-template-columns:1fr}
   .index-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;width:100%}
-  .weekly-grid{grid-template-columns:1fr}
+  .weekly-grid{grid-template-columns:repeat(2, minmax(0, 1fr));gap:8px}
 
   /* Habit table */
   .habit-tracker-container{padding:12px;position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -3271,13 +3305,9 @@ html, body {
   .habit-cell{width:18px;height:18px}
   .data-mgmt-grid{grid-template-columns:1fr !important}
   .theme-picker-grid{grid-template-columns:1fr !important}
-  .weekly-day-col{min-height:120px;padding:8px}
+  .weekly-grid{grid-template-columns:1fr !important;gap:8px}
+  .weekly-day-col{min-height:120px;padding:0}
   .modal{padding:18px 14px}
-}
-
-@media(max-width:900px){
-  .weekly-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .weekly-day-col{min-height:150px}
 }
 
 /* ==================== FOCUS TASK LIST (CUSTOM SELECTOR) ==================== */
